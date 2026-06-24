@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit Codebase"
+  short_description: "Scan codebase health and generate structural audit reports"
+  default_prompt: "Use $audit-codebase to scan this codebase for structural health issues and generate a markdown audit report with Mermaid before/after diagrams."
