@@ -1,0 +1,4 @@
+interface:
+  display_name: "Folder Architecture"
+  short_description: "Enforce clean folder organization and best-practice file placement before every file operation"
+  default_prompt: "Use $folder-architecture to enforce clean folder organization and best-practice file placement before creating or modifying files."

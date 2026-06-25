@@ -1,2 +1,17 @@
 # Python virtual environment
 .venv/
+
+# Node.js
+node_modules/
+
+# OpenCode plugins
+.opencode/plugins/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~

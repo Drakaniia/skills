@@ -2,6 +2,14 @@
 name: audit-codebase
 description: Scan any codebase (language-agnostic) and flag structural health issues including folder bloat, oversized files, deep nesting, naming inconsistencies, orphaned files, doc sprawl, and empty directories. Generates a markdown report with ASCII tree diagrams for folder structure issues and Mermaid graphs for file-level diagrams. Use when a codebase feels cluttered, disorganized, or hard to navigate.
 license: Apache-2.0
+compatibility: OpenCode >= 1.0, Claude Code >= 2.0, Codex CLI, Cursor, Gemini CLI
+allowed-tools:
+  - read
+  - grep
+  - glob
+  - bash
+  - write
+  - look_at
 ---
 
 # Audit Codebase

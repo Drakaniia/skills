@@ -2,6 +2,14 @@
 name: folder-architecture
 description: Define and enforce best-practice folder architecture whenever creating or modifying files. Use whenever the AI adds or edits code to prevent structural clutter, directory bloat, misplaced files, naming inconsistencies, and deep nesting.
 license: Apache-2.0
+compatibility: OpenCode >= 1.0, Claude Code >= 2.0, Codex CLI, Cursor, Gemini CLI
+allowed-tools:
+  - read
+  - grep
+  - glob
+  - write
+  - edit
+  - bash
 ---
 
 # Folder Architecture

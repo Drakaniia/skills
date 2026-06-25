@@ -63,8 +63,6 @@ npx skills add Drakaniia/skills -g
 npx skills add Drakaniia/skills --list
 ```
 
-This uses the [skills CLI](https://github.com/vercel-labs/skills) by Vercel Labs, the ecosystem standard tool for installing agent skills to OpenCode, Claude Code, Codex, Cursor, and 68+ other agents.
-
 ### Manual install
 
 Skills are auto-discovered from their directory. Clone this repo and your agent will find them in the expected paths. Alternatively, symlink or copy the `skills/` directory into your project's `.opencode/skills/` or global `~/.config/opencode/skills/`.
@@ -82,7 +80,16 @@ For per-agent permissions, configure in `opencode.json`:
 }
 ```
 
-### Claude Code / Codex CLI / Cursor / Gemini CLI
+### Commands (Slash Commands in TUI)
+
+After installation, use these commands in your agent's TUI:
+
+| Command | Description |
+|---|---|
+| `/audit-codebase` | Scan codebase for structural health issues and generate a report |
+| `/folder-architecture` | Enforce clean folder organization before file operations |
+
+### Manual Install (Non-npx)
 
 Copy the skill directories to the appropriate location for your platform:
 
