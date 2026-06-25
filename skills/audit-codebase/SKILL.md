@@ -10,6 +10,9 @@ allowed-tools:
   - bash
   - write
   - look_at
+metadata:
+  language: language-agnostic
+  tags: codebase-audit, codebase-health, structural-analysis, refactoring, code-quality
 ---
 
 # Audit Codebase

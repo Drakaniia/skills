@@ -10,6 +10,9 @@ allowed-tools:
   - write
   - edit
   - bash
+metadata:
+  language: language-agnostic
+  tags: folder-architecture, code-organization, file-structure, best-practices, architecture-enforcement
 ---
 
 # Folder Architecture
