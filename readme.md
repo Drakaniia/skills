@@ -1,6 +1,6 @@
 # Skills
 
-> Language-agnostic agent skills for keeping codebases healthy — one detects structural problems, the other prevents them before they happen.
+> Language-agnostic agent skills for keeping codebases healthy — one detects structural problems, another executes the fixes, and the third prevents future decay.
 
 Agent skills are reusable instructions that coding agents (OpenCode, Claude Code, Codex, Cursor, and others) discover and load on demand. This repo is a collection of skills built around a single philosophy: **codebase health is a continuous practice, not a one-time audit.**
 
@@ -10,20 +10,23 @@ Most codebases decay slowly. A file here, a directory there. Before long, you ha
 
 These two skills approach the problem from opposite ends:
 
-1. **audit-codebase** scans any codebase and surfaces *all* the structural issues —bloated directories, oversized files, deep nesting, naming chaos, orphaned files. It produces a report with ASCII trees and Mermaid diagrams that another AI session can implement from directly.
+1. **audit-codebase** scans any codebase and surfaces _all_ the structural issues — bloated directories, oversized files, deep nesting, naming chaos, orphaned files. It produces a report with ASCII trees and Mermaid diagrams.
 
-2. **folder-architecture** runs *before* every file operation — creating, modifying, or moving files. It checks thresholds (file counts, nesting depth, naming consistency) and steers the agent to place things correctly, keeping decay from accumulating.
+2. **implement-folder-architecture** executes the structural fixes from the audit report — moving files, splitting directories, updating imports, and verifying builds incrementally.
 
-One is a health checkup. The other is daily hygiene. Together they form a closed loop: audit to find problems, then prevent them from recurring.
+3. **folder-architecture** runs _before_ every file operation — creating, modifying, or moving files. It checks thresholds (file counts, nesting depth, naming consistency) and steers the agent to place things correctly, keeping decay from accumulating.
+
+One is a health checkup. Another is the contractor that does the renovation. The third is the daily hygiene that keeps things clean. Together they form a closed loop: audit to find problems, fix them systematically, then prevent them from recurring.
 
 ## Skills
 
 ### Codebase Health
 
-| Skill | What It Does | When It Activates |
-|---|---|---|
-| **[audit-codebase](./skills/audit-codebase/)** | Scans any repo (language-agnostic) and flags structural issues: folder bloat, oversized files (>400 lines), deep nesting (>4 levels), naming inconsistencies, orphaned files, doc sprawl, and empty directories. Generates a structured markdown report with before/after diagrams that an AI can implement from. | On demand — when a codebase feels cluttered, disorganized, or hard to navigate. |
-| **[folder-architecture](./skills/folder-architecture/)** | Enforces clean folder organization and best-practice file placement *before* every file creation or modification. Checks file counts, nesting depth, naming conventions, dumping grounds (utils/), barrel file freshness, and import hygiene. | Every time the agent adds or edits code — proactive prevention. |
+| Skill                                                                        | What It Does                                                                                                                                                                                                                                                                        | When It Activates                                                                                |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **[audit-codebase](./skills/audit-codebase/)**                               | Scans any repo (language-agnostic) and flags structural issues: folder bloat, oversized files (>400 lines), deep nesting (>4 levels), naming inconsistencies, orphaned files, doc sprawl, and empty directories. Generates a structured markdown report with before/after diagrams. | On demand — when a codebase feels cluttered, disorganized, or hard to navigate.                  |
+| **[implement-folder-architecture](./skills/implement-folder-architecture/)** | Executes the structural fixes from an audit report — moves files, splits directories, updates imports, barrel files, and verifies builds incrementally after each phase.                                                                                                            | After `audit-codebase` generates a report, or when a systematic folder reorganization is needed. |
+| **[folder-architecture](./skills/folder-architecture/)**                     | Enforces clean folder organization and best-practice file placement _before_ every file creation or modification. Checks file counts, nesting depth, naming conventions, dumping grounds (utils/), barrel file freshness, and import hygiene.                                       | Every time the agent adds or edits code — proactive prevention.                                  |
 
 ### Language Support
 
@@ -32,17 +35,34 @@ Both skills are fully language-agnostic. They work on Python, JavaScript/TypeScr
 ## How They Work Together
 
 ```
-audit-codebase                    folder-architecture
-  │                                    │
-  ├─ Scans entire codebase             ├─ Checks single file ops
-  ├─ Generates fix plan                ├─ Warns before bad placement
-  ├─ Output: markdown report           ├─ Suggests splits before bloat
-  └─ Use: quarterly / monthly          └─ Use: every commit / edit
+audit-codebase
+  │
+  ├─ Scans entire codebase
+  ├─ Generates fix plan
+  ├─ Output: markdown report
+  └─ Use: quarterly / monthly
+        │
+        ▼
+implement-folder-architecture
+  │
+  ├─ Reads audit report
+  ├─ Executes migration phase by phase
+  ├─ Splits folders, moves files, updates imports
+  ├─ Verifies build after each step
+  └─ Use: after audit-codebase
+        │
+        ▼
+folder-architecture
+  │
+  ├─ Checks single file ops
+  ├─ Warns before bad placement
+  ├─ Suggests splits before bloat
+  └─ Use: every commit / edit
 ```
 
-- **Already messy?** Run `audit-codebase` → get a full report split into refactoring phases → fix issues.
+- **Already messy?** Run `audit-codebase` → get a full report → run `implement-folder-architecture` to execute the fix → `folder-architecture` keeps it clean.
 - **Want to stay clean?** `folder-architecture` activates automatically during file operations to prevent new problems.
-- **Both installed?** The agent seamlessly uses each when appropriate — folder-architecture during daily work, audit-codebase when the user asks for a health check.
+- **All three installed?** The agent seamlessly uses each when appropriate — `folder-architecture` during daily work, `audit-codebase` when the user asks for a health check, and `implement-folder-architecture` when the audit report needs to be executed.
 
 ## Installation
 
@@ -55,6 +75,7 @@ npx skills add Drakaniia/skills
 # Install specific skills
 npx skills add Drakaniia/skills --skill folder-architecture
 npx skills add Drakaniia/skills --skill audit-codebase
+npx skills add Drakaniia/skills --skill implement-folder-architecture
 
 # Install globally instead of project-local
 npx skills add Drakaniia/skills -g
@@ -84,22 +105,23 @@ For per-agent permissions, configure in `opencode.json`:
 
 After installation, use these commands in your agent's TUI:
 
-| Command | Description |
-|---|---|
-| `/audit-codebase` | Scan codebase for structural health issues and generate a report |
-| `/folder-architecture` | Enforce clean folder organization before file operations |
+| Command                          | Description                                                      |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `/audit-codebase`                | Scan codebase for structural health issues and generate a report |
+| `/implement-folder-architecture` | Execute folder architecture migration from an audit report       |
+| `/folder-architecture`           | Enforce clean folder organization before file operations         |
 
-### Manual Install (Non-npx)
+### Manual Install
 
 Copy the skill directories to the appropriate location for your platform:
 
-| Platform | Location |
-|---|---|
-| Claude Code | `.claude/skills/` or `~/.claude/skills/` |
-| Codex CLI | `.codex/skills/` or `~/.codex/skills/` |
-| Cursor | `.cursor/rules/` (see platform docs) |
-| Gemini CLI | `.agents/skills/` or `~/.agents/skills/` |
-| OpenCode | `.opencode/skills/` or `~/.config/opencode/skills/` |
+| Platform    | Location                                            |
+| ----------- | --------------------------------------------------- |
+| Claude Code | `.claude/skills/` or `~/.claude/skills/`            |
+| Codex CLI   | `.codex/skills/` or `~/.codex/skills/`              |
+| Cursor      | `.cursor/rules/` (see platform docs)                |
+| Gemini CLI  | `.agents/skills/` or `~/.agents/skills/`            |
+| OpenCode    | `.opencode/skills/` or `~/.config/opencode/skills/` |
 
 Each skill follows the [Agent Skills open standard](https://openagentskills.dev) — one `SKILL.md` per directory, YAML frontmatter with `name` and `description`, progressive disclosure loading.
 
