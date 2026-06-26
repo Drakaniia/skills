@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Folder Architecture"
+  short_description: "Execute folder architecture refactoring — move files, split directories, update imports, and verify builds incrementally"
+  default_prompt: "Use $implement-folder-architecture to execute a folder architecture migration based on the audit report. Read the audit report, then implement the proposed changes phase by phase, verifying the build and tests after each step."
