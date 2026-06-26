@@ -17,12 +17,12 @@ metadata:
 
 # Audit Codebase
 
-Use this skill to act as a **Codebase Health Auditor** — inspecting any codebase regardless of programming language, framework, or project type, and producing a structured markdown report that an AI can implement from in a subsequent session.
+Use this skill to act as a **Codebase Health Auditor** — inspecting any codebase regardless of programming language, framework, or project type, and producing a structured markdown report that the implement-folder-architecture skill can execute from in a subsequent session.
 
 ## Core Principles
 
 - **Language-agnostic**: Every check must work on Python, JavaScript, Go, Rust, Java, C++, or any other language without modification. See [organization patterns per language](references/ORGANIZATION-PATTERNS.md) for guidance.
-- **Report as contract**: The generated report must contain every detail needed for a fresh AI session to implement the fixes without asking clarifying questions.
+- **Report as contract**: The generated report must contain every detail needed for the implement-folder-architecture skill to execute the fixes without asking clarifying questions.
 - **Language-specific splitting guidance**: When the report recommends splitting an oversized file, use [SPLITTING-GUIDE.md](references/SPLITTING-GUIDE.md) for per-language mechanics, import updates, and before/after code examples for Python, JS/TS, Go, Rust, Java, C#, Ruby, and PHP.
 - **Before/after clarity**: Every issue must include a diagram showing both the current state and the proposed fix — ASCII trees for folder structures, Mermaid `flowchart`/`graph` for file-level diagrams.
 - **Evidence over opinion**: Every flag must reference a measured metric (file count, line count, depth level) against a hardcoded threshold.
@@ -30,28 +30,28 @@ Use this skill to act as a **Codebase Health Auditor** — inspecting any codeba
 ## Workflow
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  1. Ask user preference:                                    │
-│     a) Full report (comprehensive + diagrams)               │
-│     b) Quick spec (concise, fast-track for AI implement)    │
-│                                                             │
-│  2. Scan the codebase (via agent inspection):                │
-│     - Collect all metrics (file counts, line counts,        │
-│       nesting depth, naming, placement, docs)               │
-│     - Identify structural smells                            │
-│                                                             │
-│  3. Generate markdown report with:                          │
-│     - Executive summary                                     │
-│     - Issues found (grouped by refactoring phases)          │
-│     - Checklist checkboxes and progress tracker              │
-│     - Before/after diagrams                                 │
-│     - Recommended actions with reasoning                    │
-│                                                             │
-│  4. Save report as `<repo-name>-audit.md`                   │
-│                                                             │
-│  5. Tell the user to open a new AI session, pass the        │
-│     report, and the AI can implement fixes directly         │
-└─────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────┐
+│  1. Ask user preference:                                          │
+│     a) Full report (comprehensive + diagrams)                     │
+│     b) Quick spec (concise, fast-track for AI implement)          │
+│                                                                   │
+│  2. Scan the codebase (via agent inspection):                     │
+│     - Collect all metrics (file counts, line counts,              │
+│       nesting depth, naming, placement, docs)                     │
+│     - Identify structural smells                                  │
+│                                                                   │
+│  3. Generate markdown report with:                                │
+│     - Executive summary                                           │
+│     - Issues found (grouped by refactoring phases)                │
+│     - Checklist checkboxes and progress tracker                   │
+│     - Before/after diagrams                                       │
+│     - Recommended actions with reasoning                          │
+│                                                                   │
+│  4. Save report as `<repo-name>-audit.md`                         │
+│                                                                   │
+│  5. Tell the user to use the implement-folder-architecture skill  │
+│     with the report to execute the migration incrementally        │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 ## How the AI Scans the Codebase
@@ -277,19 +277,6 @@ flowchart LR
 | Symlinks                         | Follow symlinks but warn about them                                                                                      |
 | Hidden files/directories         | Skip `.`-prefixed files and directories unless they are configuration files                                              |
 
-## Implementation Notes for the AI Session
-
-When a new AI session starts to implement the report's recommendations:
-
-1. **Always use `skill:test-driven-development`** — write a failing test first, then make it pass, then refactor. This applies especially to:
-   - Splitting oversized files (understand the API surface first)
-   - Moving files between directories (import paths may change)
-   - Restructuring modules (dependency graphs must remain valid)
-2. **Implement Phase 1 first** — low risk, quick wins.
-3. **For Phase 2, tackle one file at a time** — extract modules, run tests, commit, then move to next.
-4. **For Phase 3, plan the full directory structure before moving files** — sketch target tree, then move in batches.
-5. **After each phase, re-run the full test suite** and verify nothing is broken.
-
 ## Final Verification
 
 After generating the report, do a quick consistency check against the [reference documentation](references/REFERENCE.md):
@@ -301,7 +288,7 @@ After generating the report, do a quick consistency check against the [reference
 - [ ] Each oversized file split plan includes language-specific steps (see [SPLITTING-GUIDE.md](references/SPLITTING-GUIDE.md))
 - [ ] Each split plan includes proposed file names, target directory, import changes, and verification steps
 - [ ] The report is saved and the file path is communicated to the user
-- [ ] The report contains enough context for a new AI session to implement fixes independently
+- [ ] The report contains enough context for the implement-folder-architecture skill to execute fixes independently
 
 ## Execution Checklist
 
