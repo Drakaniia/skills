@@ -608,7 +608,7 @@ implement-folder-architecture → fix new issues
 
 | Situation                                              | Handling                                                                                                                 |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **No audit report available**                          | Ask the user to run `audit-codebase` first, or use `folder-architecture` thresholds to guide the refactoring manually    |
+| **No audit report available**                          | Use `ask_user` tool to ask the user to run `audit-codebase` first, or use `folder-architecture` thresholds to guide the refactoring manually    |
 | **Empty target directory after migration**             | Remove it, or verify the directory serves a purpose (e.g., placeholder for future code)                                  |
 | **Circular dependencies found during refactoring**     | Extract the shared dependency into a separate module and update both sides to import from it                             |
 | **File imported by 20+ consumers (high blast radius)** | Keep the original file as a thin re-export facade, update consumers in batches of 5, verify after each batch             |
