@@ -420,14 +420,16 @@ flowchart LR
 
 ---
 
-## AI-Driven Scanning: Finding Long Files with `wc -l`
+## AI-Driven Scanning: Hybrid `find + wc` Pipeline
 
-Since the `scripts/` directory has been removed, the AI performs all auditing by inspecting the codebase directly. The key command for **Metric 2 (File Line Count)** is `wc -l`:
+Since the `scripts/` directory has been removed, the AI performs all auditing by inspecting the codebase directly. Always use the **hybrid `find + wc` pipeline** — pipe `find` results through `wc -l` and `sort` — rather than bare `find` alone. This gives you line counts, file counts, and sorted output in one pass.
+
+The key command for **Metric 2 (File Line Count)** is the hybrid `find + wc` pipeline:
 
 ### Basic Scan
 
 ```bash
-# Count lines in all source files, sorted by size (largest first)
+# Hybrid find + wc: count lines in all source files, sorted by size (largest first)
 find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" \) \
   ! -path '*/node_modules/*' ! -path '*/.git/*' ! -path '*/vendor/*' ! -path '*/dist/*' \
   -exec wc -l {} + | sort -rn
@@ -436,7 +438,7 @@ find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -
 ### Focusing on Oversized Files
 
 ```bash
-# Flag only files exceeding the 400-line threshold
+# Hybrid find + wc: flag only files exceeding the 400-line threshold
 find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) \
   ! -path '*/node_modules/*' ! -path '*/.git/*' \
   -exec wc -l {} + | awk '$1 > 400' | sort -rn
@@ -445,7 +447,7 @@ find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) \
 ### Per-Directory Counting (for Metric 1)
 
 ```bash
-# Count files per directory, sorted by most crowded first
+# Hybrid find + wc: count files per directory, sorted by most crowded first
 find . -type f ! -path '*/node_modules/*' ! -path '*/.git/*' | sed 's|/[^/]*$||' | sort | uniq -c | sort -rn | head -20
 ```
 
