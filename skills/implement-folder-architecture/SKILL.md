@@ -589,6 +589,19 @@ This skill and `folder-architecture` serve different stages:
 | **Scope**   | Full codebase restructure                | Single file/directory checks     |
 | **Trigger** | User invocation of report implementation | Automatic during file operations |
 
+### code-design
+
+This skill (`implement-folder-architecture`) handles **structural** refactoring — moving files, splitting directories. The `code-design` skill ensures the code _inside_ those files is well-designed at the function level:
+
+| Aspect      | implement-folder-architecture (this)   | code-design                         |
+| ----------- | -------------------------------------- | ----------------------------------- |
+| **Purpose** | Move files, split dirs, update imports | Enforce pure functions, SRP, guards |
+| **Scope**   | File/directory structure               | Function-level design               |
+| **When**    | During structural migration            | After migration, during code review |
+| **Trigger** | Audit report or user request           | Any function write or review        |
+
+**When to use code-design**: After splitting an oversized file (Phase 2) or moving code into a new structure (Phase 3), run `code-design` on the affected functions. Structural splitting creates new modules — `code-design` ensures those modules contain cleanly designed functions.
+
 **Workflow after migration:**
 
 ```text
@@ -596,6 +609,9 @@ implement-folder-architecture → migration complete
         │
         ▼
 folder-architecture activates → prevents new structural issues
+        │
+        ▼
+code-design activates → ensures functions inside files are well-designed
         │
         ▼
 audit-codebase (next quarter) → detect any new issues
@@ -606,19 +622,19 @@ implement-folder-architecture → fix new issues
 
 ## Edge Cases
 
-| Situation                                              | Handling                                                                                                                 |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **No audit report available**                          | Use `ask_user` tool to ask the user to run `audit-codebase` first, or use `folder-architecture` thresholds to guide the refactoring manually    |
-| **Empty target directory after migration**             | Remove it, or verify the directory serves a purpose (e.g., placeholder for future code)                                  |
-| **Circular dependencies found during refactoring**     | Extract the shared dependency into a separate module and update both sides to import from it                             |
-| **File imported by 20+ consumers (high blast radius)** | Keep the original file as a thin re-export facade, update consumers in batches of 5, verify after each batch             |
-| **Mixed-content file (component + logic + styles)**    | Extract styles first, then sub-components, then logic/hooks — keep the component boundary clean                          |
-| **File with no clear internal boundaries**             | Flag for manual review, do not attempt to split — move the file as-is if needed, but document the need for decomposition |
-| **Generated code**                                     | Skip migration for `generated/`, `dist/`, `build/` directories — they follow their own rules                             |
-| **Vendor/third-party code**                            | Skip `node_modules/`, `vendor/`, `.venv/` — do not restructure external dependencies                                     |
-| **Monorepo with packages**                             | Apply migration per-package, not globally. Each package has its own structure and thresholds                             |
-| **Build fails after a step**                           | Revert the change, diagnose the issue, fix, and retry. Never skip build verification                                     |
-| **User disagrees with proposed structure**             | Respect user's preference. Move files where they specify, but flag any structural concerns                               |
+| Situation                                              | Handling                                                                                                                                     |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No audit report available**                          | Use `ask_user` tool to ask the user to run `audit-codebase` first, or use `folder-architecture` thresholds to guide the refactoring manually |
+| **Empty target directory after migration**             | Remove it, or verify the directory serves a purpose (e.g., placeholder for future code)                                                      |
+| **Circular dependencies found during refactoring**     | Extract the shared dependency into a separate module and update both sides to import from it                                                 |
+| **File imported by 20+ consumers (high blast radius)** | Keep the original file as a thin re-export facade, update consumers in batches of 5, verify after each batch                                 |
+| **Mixed-content file (component + logic + styles)**    | Extract styles first, then sub-components, then logic/hooks — keep the component boundary clean                                              |
+| **File with no clear internal boundaries**             | Flag for manual review, do not attempt to split — move the file as-is if needed, but document the need for decomposition                     |
+| **Generated code**                                     | Skip migration for `generated/`, `dist/`, `build/` directories — they follow their own rules                                                 |
+| **Vendor/third-party code**                            | Skip `node_modules/`, `vendor/`, `.venv/` — do not restructure external dependencies                                                         |
+| **Monorepo with packages**                             | Apply migration per-package, not globally. Each package has its own structure and thresholds                                                 |
+| **Build fails after a step**                           | Revert the change, diagnose the issue, fix, and retry. Never skip build verification                                                         |
+| **User disagrees with proposed structure**             | Respect user's preference. Move files where they specify, but flag any structural concerns                                                   |
 
 ## Execution Checklist
 

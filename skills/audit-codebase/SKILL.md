@@ -289,6 +289,7 @@ After generating the report, do a quick consistency check against the [reference
 - [ ] Each split plan includes proposed file names, target directory, import changes, and verification steps
 - [ ] The report is saved and the file path is communicated to the user
 - [ ] The report contains enough context for the implement-folder-architecture skill to execute fixes independently
+- [ ] Each oversized file flagged should be reviewed with `code-design` afterward — splitting a file by line count is structural, but the extracted functions must also follow single responsibility, guard clauses, and side-effect management principles
 
 ## Execution Checklist
 

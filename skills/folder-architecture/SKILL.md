@@ -235,6 +235,19 @@ This skill (folder-architecture) and audit-codebase are complementary:
 
 **When to use audit-codebase**: If during development you notice pervasive structural issues (multiple oversized files, many bloated directories, inconsistent patterns), switch to `audit-codebase` for a comprehensive review.
 
+### code-design
+
+This skill (`folder-architecture`) handles **where** files go. The `code-design` skill handles **how code is written inside those files** — it's the function-level counterpart:
+
+| Aspect     | folder-architecture (this)             | code-design                        |
+| ---------- | -------------------------------------- | ---------------------------------- |
+| **Scope**  | File/directory placement               | Function-level code design         |
+| **Checks** | Dir count, nesting depth, naming, etc. | Pure functions, SRP, guard clauses |
+| **When**   | Before creating/modifying files        | Before/during writing functions    |
+| **Action** | Place correctly or warn                | Refactor impure/nested/mixed code  |
+
+**When to use code-design**: After placing a file with this skill, use `code-design` to ensure every function inside that file follows clean design principles — guard clauses, single responsibility, side-effect management, and top-to-bottom readability.
+
 ## Execution Checklist
 
 Before creating or modifying any file, verify every applicable item:
