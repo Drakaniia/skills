@@ -7,6 +7,9 @@ node_modules/
 # OpenCode plugins
 .opencode/plugins/
 
+# OpenCode session data
+.omo/
+
 # OS files
 .DS_Store
 Thumbs.db
