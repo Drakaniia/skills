@@ -1,6 +1,6 @@
 # Codebase Organization Patterns by Language
 
-This reference helps the `audit-codebase` skill make **language-appropriate recommendations**. When flagging issues, the agent should adapt its suggestions to the project's language and framework conventions.
+This reference helps the `implement-folder-architecture` skill make **language-appropriate restructuring decisions** when executing folder migrations. When moving files and refactoring imports, the agent should adapt its approach to the project's language and framework conventions.
 
 ---
 
@@ -89,21 +89,37 @@ _Next.js App Router:_
 
 ```
 app/
+  ├── layout.tsx                  ← root layout (required)
+  ├── page.tsx                    ← home page
+  ├── (marketing)/                ← route group (no URL prefix)
+  │   ├── layout.tsx
+  │   └── page.tsx
   ├── users/
   │   ├── page.tsx
   │   ├── layout.tsx
   │   └── [id]/
   │       └── page.tsx
-  ├── api/
-  └── layout.tsx
-lib/
+  ├── _components/                ← private folder (not routed)
+  │   └── UserCard.tsx
+  ├── _lib/
+  │   └── utils.ts
+  └── api/                        ← API routes
+      └── users/
+          └── route.ts
+lib/                              ← shared code (outside app/)
   ├── db.ts
   └── utils.ts
 components/
   └── shared/
 ```
 
-**Refactoring tip:** Avoid dumping all components in one folder. Group by feature/page. Keep `components/` for truly shared UI only.
+**Next.js routing conventions:**
+- **File paths ARE routes** — `app/users/[id]/page.tsx` → `/users/:id`
+- **Route groups** `(group)` — organize without affecting URL structure
+- **Private folders** `_folder` — prefix with underscore to exclude from routing (for co-located components, utils, etc.)
+- Public code lives in `app/` for route co-location; shared code lives outside `app/` at project root
+
+**Refactoring tip:** Avoid dumping all components in one folder. Group by feature/page. Keep `components/` for truly shared UI only. Use route groups to separate marketing, dashboard, and auth sections within `app/`.
 
 #### Splitting Mechanics (JavaScript / TypeScript)
 
@@ -125,8 +141,9 @@ components/
 **Standard conventions:**
 
 - Snake_case for files (`user_service.go`)
-- Go uses `internal/` to enforce package privacy
-- Follows [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
+- **No official project layout** — Go has no mandated directory structure. The Go team's advice: keep it simple, put a `go.mod` at root, organize by domain.
+- `internal/` enforces package privacy — packages under `internal/` can only be imported by the parent module
+- `cmd/` is the conventional location for binary entry points (one subdirectory per binary)
 
 **Typical structure:**
 
@@ -134,19 +151,20 @@ components/
 project/
   ├── cmd/
   │   └── server/
-  │       └── main.go
+  │       └── main.go             ← binary entry point
   ├── internal/
   │   ├── user/
   │   │   ├── service.go
   │   │   ├── repository.go
   │   │   └── handler.go
   │   └── billing/
-  ├── pkg/
-  │   └── shared/
-  └── go.mod
+  ├── go.mod
+  └── go.sum
 ```
 
-**Refactoring tip:** Use `internal/` for private code. Group by domain (`internal/user/`, `internal/billing/`). Avoid deep nesting inside `internal/`.
+> **Note on `pkg/`:** Some projects use a top-level `pkg/` directory for code meant to be shared externally, but this is **controversial** — the Go standard library does not use it, and many in the Go community consider it unnecessary. Prefer exporting from the domain package directly or using `internal/` for private code.
+
+**Refactoring tip:** Use `internal/` for private code. Group by domain (`internal/user/`, `internal/billing/`). Keep packages flat — avoid deep nesting inside `internal/`.
 
 #### Splitting Mechanics (Go)
 
@@ -167,42 +185,64 @@ project/
 **Standard conventions:**
 
 - Snake_case for files (`user_service.rs`)
-- Modules declared in `mod.rs` or `lib.rs`
-- Tests live alongside source or in `tests/`
+- Modules declared in `lib.rs` or `main.rs`
+- Since Rust 2018 edition, the preferred module root file is `module_name.rs`, NOT `mod.rs`
+- Tests live alongside source (unit) or in `tests/` (integration)
 
-**Typical structure:**
+**Typical structure (2018+ style — preferred):**
 
 ```
 project/
   ├── src/
-  │   ├── main.rs
-  │   ├── lib.rs
+  │   ├── main.rs                  ← declares child modules with `mod user;`
+  │   ├── lib.rs                   ← (if library crate)
+  │   ├── user.rs                  ← root of the `user` module
   │   ├── user/
-  │   │   ├── mod.rs
-  │   │   ├── service.rs
+  │   │   ├── service.rs           ← submodule of user
   │   │   ├── model.rs
-  │   │   └── tests.rs
+  │   │   └── tests.rs             ← unit tests for user module
+  │   ├── billing.rs               ← root of the `billing` module
   │   └── billing/
-  │       ├── mod.rs
   │       └── service.rs
   └── tests/
       └── integration_test.rs
 ```
 
-**Refactoring tip:** Each domain module gets its own directory with a `mod.rs`. Keep modules focused — split large `mod.rs` files by concern.
+**Alternative (pre-2018 `mod.rs` style — still valid):**
+
+```
+project/
+  ├── src/
+  │   ├── main.rs
+  │   ├── user/
+  │   │   ├── mod.rs               ← module root, same role as user.rs above
+  │   │   ├── service.rs
+  │   │   └── model.rs
+  │   └── billing/
+  │       ├── mod.rs
+  │       └── service.rs
+  └── tests/
+```
+
+Both styles work. The compiler looks for `module.rs` first, then `module/mod.rs`. Having **both** in the same project causes error E0761. Prefer the 2018+ style for new projects.
+
+**Refactoring tip:** Each domain module gets its own directory. Keep module root files thin — split logic into submodules by concern.
 
 #### Splitting Mechanics (Rust)
 
-- **Module unit:** A file (`module.rs`) or directory (`module/mod.rs`).
+- **Module unit:** A file (`module.rs`) or directory (`module/mod.rs` or `module.rs` + `module/`).
 - **Module declaration:** `mod module_name;` in the parent file declares a child module.
 - **Import mechanism:** `use crate::module::Item;`, `use crate::module::submodule::Item;`
 - **Visibility:** `pub` = public, `pub(crate)` = crate-wide, `pub(super)` = parent module only. Default = private.
-- **Folder creation:** When splitting a large module, convert it to a directory:
-  - `module.rs` → `module/mod.rs` (declares submodules) + `module/types.rs`, `module/service.rs`, etc.
+- **Folder creation:** When splitting a large module into submodules, convert it to a directory:
+  - 2018+ style: `module.rs` → keep `module.rs` (root) + create `module/submodule.rs`
+  - Legacy style: `module.rs` → `module/mod.rs` + create `module/submodule.rs`
+  - The new file must be declared with `pub mod submodule;` in the root file.
 - **Common pitfalls:**
-  - Forgetting `pub` on re-exports in `mod.rs` makes symbols inaccessible
+  - Forgetting `pub` on re-exports in the module root file makes symbols inaccessible
   - Module paths change: `super::Item` may need updating when depth changes
-  - Must declare each new file with `pub mod file_name;` in `mod.rs`
+  - Must declare each new file with `pub mod file_name;` in the module root
+  - Having both `module.rs` AND `module/mod.rs` is a compile error (E0761) — pick one style
 - **See also:** [SPLITTING-GUIDE.md](SPLITTING-GUIDE.md) for full before/after code examples
 
 ---
@@ -213,26 +253,11 @@ project/
 
 - PascalCase for classes (`UserService.java`), camelCase for packages (`com.company.project`)
 - Maven/Gradle convention: `src/main/java/`, `src/test/java/`
-- Classic layered: `controller/`, `service/`, `repository/`, `entity/`
+- Spring Boot officially recommends **feature-based** (domain-first) packages over layered
 
 **Typical structures:**
 
-_Layered (traditional):_
-
-```
-src/
-  └── main/
-      └── java/
-          └── com/
-              └── company/
-                  ├── controller/
-                  ├── service/
-                  ├── repository/
-                  ├── entity/
-                  └── config/
-```
-
-_Feature-based (modern):_
+_Feature-based (recommended by Spring Boot):_
 
 ```
 src/
@@ -249,7 +274,22 @@ src/
                       └── ...
 ```
 
-**Refactoring tip:** The `src/main/java/com/company/` prefix alone is 4 nesting levels. Combine domain-first with the package prefix — but keep the total under 5-6 levels.
+_Layered (traditional — acceptable for simple apps):_
+
+```
+src/
+  └── main/
+      └── java/
+          └── com/
+              └── company/
+                  ├── controller/
+                  ├── service/
+                  ├── repository/
+                  ├── entity/
+                  └── config/
+```
+
+**Refactoring tip:** Spring Boot's official docs show feature-based packages (`com.example.myapplication.customer.CustomerController`). The `src/main/java/com/company/` prefix alone is 4 nesting levels — combine domain-first with the package prefix but keep total under 5-6 levels. Use layered only for trivial apps.
 
 #### Splitting Mechanics (Java)
 
