@@ -1,6 +1,6 @@
 # Skills
 
-> Language-agnostic agent skills for keeping codebases healthy — one audits structure, another executes fixes, a third prevents decay, and a fourth ensures the code _inside_ files is well-designed.
+> Language-agnostic agent skills for keeping codebases healthy — audit structural health, execute fixes, prevent decay, design clean functions, and ship pixel-perfect UI components.
 
 Agent skills are reusable instructions that coding agents (OpenCode, Claude Code, Codex, Cursor, and others) discover and load on demand. This repo is a collection of skills built around a single philosophy: **codebase health is a continuous practice, not a one-time audit.**
 
@@ -10,13 +10,11 @@ Agent skills are reusable instructions that coding agents (OpenCode, Claude Code
 npx skills add Drakaniia/skills
 ```
 
-Install all four skills at once, or add [individually](#installation) per project. Requires [Node.js](https://nodejs.org) for `npx`.
-
 ## How It Works
 
 Most codebases decay slowly. A file here, a directory there. Before long, you have 47 files in `src/utils/`, a 900-line `services.py`, and no clear convention for where anything goes.
 
-These four skills approach the problem from opposite ends:
+These five skills approach the problem from complementary angles:
 
 1. **audit-codebase** scans any codebase and surfaces _all_ the structural issues — bloated directories, oversized files, deep nesting, naming chaos, orphaned files. It produces a report with ASCII trees and Mermaid diagrams.
 
@@ -26,9 +24,13 @@ These four skills approach the problem from opposite ends:
 
 4. **code-design** enforces clean function-level design _inside_ files — pure functions, single responsibility, guard clauses, side-effect management, and top-to-bottom readability. It runs during code review and function creation.
 
-One is a health checkup. Another is the contractor that does the renovation. The third is the daily hygiene that keeps things clean. The fourth ensures the code inside is as clean as the structure around it. Together they form a layered defense: audit to find problems, fix them systematically, prevent them from recurring, and write clean code from the start.
+5. **visual-regression** turns reference images (screenshots, Figma exports, mockups) into Playwright visual tests. Saves the image as a baseline, writes the test, then guides the fix → re-run → diff loop until the component matches the reference pixel-perfectly.
+
+Audit to find problems, fix them systematically, prevent them from recurring, write clean code from the start, and verify it looks right. Together they form a layered defense: audit to find problems, fix them systematically, prevent them from recurring, and write clean code from the start.
 
 ## Skills
+
+### Codebase Health
 
 ### Codebase Health
 
@@ -38,6 +40,12 @@ One is a health checkup. Another is the contractor that does the renovation. The
 | **[implement-folder-architecture](./skills/implement-folder-architecture/)** | Executes the structural fixes from an audit report — moves files, splits directories, updates imports, barrel files, and verifies builds incrementally after each phase.                                                                                                            | After `audit-codebase` generates a report, or when a systematic folder reorganization is needed. |
 | **[folder-architecture](./skills/folder-architecture/)**                     | Enforces clean folder organization and best-practice file placement _before_ every file creation or modification. Checks file counts, nesting depth, naming conventions, dumping grounds (utils/), barrel file freshness, and import hygiene.                                       | Every time the agent adds or edits code — proactive prevention.                                  |
 | **[code-design](./skills/code-design/)**                                     | Enforces clean function-level design inside files — pure functions, single responsibility, guard clauses, imperative shell pattern, side-effect management, and top-to-bottom readability. Includes a 5-step review checklist and 7 red flags.                                      | During code review, function creation, or when refactoring oversized functions.                  |
+
+### Visual Testing
+
+| Skill                                                | What It Does                                                                                                                                                                                                                                                 | When It Activates                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| **[visual-regression](./skills/visual-regression/)** | Turns user-provided reference images into Playwright visual tests. Saves the reference as a baseline, writes the test, and guides the fix → re-run → diff loop until the component matches pixel-perfectly. Includes troubleshooting and edge case guidance. | When the user provides a reference image and wants a component to match it exactly. |
 
 > **Language support:** All skills are language-agnostic — they work on Python, JavaScript/TypeScript, Go, Rust, Java, C#, Ruby, PHP, and any other language. Each includes language-specific reference guides for organization patterns, file-splitting mechanics, and function-level design traps.
 
@@ -75,11 +83,20 @@ code-design
   ├─ Enforces pure functions & SRP
   ├─ Manages side effects (imperative shell)
   └─ Use: during code review / function creation
+        │
+        ▼
+visual-regression
+  │
+  ├─ Receives reference image (screenshot / Figma export / mockup)
+  ├─ Saves as baseline in e2e/visual/baselines/
+  ├─ Writes Playwright visual test
+  ├─ Guides fix → re-run → diff → pass loop
+  └─ Use: when matching a component to a reference image
 ```
 
-- **Already messy?** Run `audit-codebase` → get a full report → run `implement-folder-architecture` to execute the fix → `folder-architecture` keeps it clean → `code-design` ensures functions inside are well-designed.
-- **Starting fresh?** `folder-architecture` activates during file ops, `code-design` activates during function creation — both prevent structural and functional decay from the start.
-- **All four installed?** The agent seamlessly uses each when appropriate — `folder-architecture` during daily work, `code-design` during code review, `audit-codebase` when the user asks for a health check, and `implement-folder-architecture` when the audit report needs to be executed.
+- **Already messy?** Run `audit-codebase` → get a full report → run `implement-folder-architecture` to execute the fix → `folder-architecture` keeps it clean → `code-design` ensures functions inside are well-designed → `visual-regression` verifies the UI matches the design spec.
+- **Starting fresh?** `folder-architecture` activates during file ops, `code-design` activates during function creation, `visual-regression` activates when reference images are provided.
+- **All five installed?** The agent seamlessly uses each when appropriate — `folder-architecture` during daily work, `code-design` during code review, `audit-codebase` when the user asks for a health check, `implement-folder-architecture` when the audit report needs to be executed, and `visual-regression` when a component needs to match a reference image.
 
 ### Manual Install
 
@@ -101,7 +118,8 @@ For per-agent permissions, configure in `opencode.json`:
     "skill": {
       "audit-codebase": "allow",
       "folder-architecture": "allow",
-      "code-design": "allow"
+      "code-design": "allow",
+      "visual-regression": "allow"
     }
   }
 }
@@ -119,6 +137,7 @@ After installation, use these commands in your agent's TUI:
 | `/implement-folder-architecture` | Execute folder architecture migration from an audit report       |
 | `/folder-architecture`           | Enforce clean folder organization before file operations         |
 | `/code-design`                   | Review and enforce clean function-level design inside files      |
+| `/visual-regression`             | Implement pixel-perfect components from reference images         |
 
 ## Requirements
 
