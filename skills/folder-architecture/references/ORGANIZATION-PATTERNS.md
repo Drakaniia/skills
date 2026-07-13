@@ -116,6 +116,7 @@ components/
 ```
 
 **Next.js routing conventions:**
+
 - **File paths ARE routes** — `app/users/[id]/page.tsx` → `/users/:id`
 - **Route groups** `(group)` — organize without affecting URL structure
 - **Private folders** `_folder` — prefix with underscore to exclude from routing (for co-located components, utils, etc.)
