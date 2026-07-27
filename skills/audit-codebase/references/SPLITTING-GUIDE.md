@@ -1,13 +1,4 @@
-# File Splitting Guide — Language-Specific Reference
-
-When the `audit-codebase` skill flags a file as oversized (>400 lines), the implementing AI session must split it into smaller modules. This guide provides **language-specific mechanics** for doing so correctly.
-
-**Load this reference when:** An audit report recommends splitting an oversized file and you need to execute the split.
-
-> **Canonical source:** `_shared/references/SPLITTING-GUIDE.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
-
----
-
+﻿---
 ## Universal Principles (Any Language)
 
 These principles apply regardless of stack:

@@ -3,13 +3,13 @@
 
 These principles apply regardless of stack:
 
-1. **Preserve the public API** â€” External consumers of the file should find the same exports/symbols after the split (use barrel files/re-exports when needed).
-2. **One module per concern** â€” Extract code by natural boundaries: classes, functions, comment-section headers, import-group clusters.
-3. **Prefer same-directory over subdirectory** â€” Keep extracted files in the same directory unless 3+ files are extracted or a clear domain boundary emerges.
-4. **Match existing conventions** â€” Use the project's detected naming convention (snake_case, kebab-case, PascalCase) for new files.
-5. **Update all references** â€” Every file that imported from the original must be updated. Use code-search tools to find them all.
-6. **Test before and after** â€” Write a test capturing the public API before splitting, verify it passes after splitting.
-7. **No cross-directory packages in Go** â€” Go requires all files in a package to be in the same directory. Splitting a Go file means keeping the same package.
+1. **Preserve the public API** — External consumers of the file should find the same exports/symbols after the split (use barrel files/re-exports when needed).
+2. **One module per concern** — Extract code by natural boundaries: classes, functions, comment-section headers, import-group clusters.
+3. **Prefer same-directory over subdirectory** — Keep extracted files in the same directory unless 3+ files are extracted or a clear domain boundary emerges.
+4. **Match existing conventions** — Use the project's detected naming convention (snake_case, kebab-case, PascalCase) for new files.
+5. **Update all references** — Every file that imported from the original must be updated. Use code-search tools to find them all.
+6. **Test before and after** — Write a test capturing the public API before splitting, verify it passes after splitting.
+7. **No cross-directory packages in Go** — Go requires all files in a package to be in the same directory. Splitting a Go file means keeping the same package.
 
 ---
 
@@ -79,12 +79,12 @@ flowchart TD
 | Step | Question                                         | Decision                                                              |
 | ---- | ------------------------------------------------ | --------------------------------------------------------------------- |
 | 1    | What language is the file?                       | Load this guide's relevant section                                    |
-| 2    | Can you identify 2+ natural module boundaries?   | Yes â†’ continue. No â†’ flag as needing manual review                    |
-| 3    | How many extracted modules?                      | 1-2 â†’ same directory. 3+ â†’ subdirectory                               |
+| 2    | Can you identify 2+ natural module boundaries?   | Yes → continue. No → flag as needing manual review                    |
+| 3    | How many extracted modules?                      | 1-2 → same directory. 3+ → subdirectory                               |
 | 4    | What naming convention does the project use?     | Detect from existing files in same directory                          |
-| 5    | How many other files import from this file?      | 0-5 â†’ straightforward. 5-20 â†’ careful tracking. 20+ â†’ staged approach |
-| 6    | Are there circular dependencies within the file? | Yes â†’ extract shared core first. No â†’ proceed                         |
-| 7    | Does the file have existing tests?               | Yes â†’ use as validation. No â†’ pre-split test required                 |
+| 5    | How many other files import from this file?      | 0-5 → straightforward. 5-20 → careful tracking. 20+ → staged approach |
+| 6    | Are there circular dependencies within the file? | Yes → extract shared core first. No → proceed                         |
+| 7    | Does the file have existing tests?               | Yes → use as validation. No → pre-split test required                 |
 
 ---
 
@@ -112,11 +112,11 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Optional
 
-# â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Constants ────────────────────────────────────────
 MIN_ORDER_AMOUNT = Decimal("10.00")
 MAX_DISCOUNT_PERCENT = Decimal("50.00")
 
-# â”€â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Validation ───────────────────────────────────────
 def validate_order(order: dict) -> list[str]:
     errors = []
     if order.get("amount", 0) < MIN_ORDER_AMOUNT:
@@ -125,7 +125,7 @@ def validate_order(order: dict) -> list[str]:
         errors.append("Order has no items")
     return errors
 
-# â”€â”€â”€ Pricing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Pricing ──────────────────────────────────────────
 def calculate_subtotal(items: list[dict]) -> Decimal:
     return sum(Decimal(item["price"]) * item["qty"] for item in items)
 
@@ -137,7 +137,7 @@ def apply_discount(subtotal: Decimal, discount_pct: Decimal) -> Decimal:
 def calculate_tax(amount: Decimal, rate: Decimal) -> Decimal:
     return amount * rate
 
-# â”€â”€â”€ Persistence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Persistence ──────────────────────────────────────
 def save_order(order: dict) -> int:
     # ... database write logic ...
     return 12345
@@ -146,7 +146,7 @@ def get_order_by_id(order_id: int) -> Optional[dict]:
     # ... database read logic ...
     return None
 
-# â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Helpers ──────────────────────────────────────────
 def format_currency(amount: Decimal) -> str:
     return f"${amount:.2f}"
 
@@ -154,7 +154,7 @@ def log_order_action(action: str, order_id: int) -> None:
     print(f"[{datetime.now()}] Order {order_id}: {action}")
 ```
 
-**After (same directory, flat â€” 4 extracted files + updated **init**.py):**
+**After (same directory, flat — 4 extracted files + updated **init**.py):**
 
 `src/services/order_validation.py`:
 
@@ -221,7 +221,7 @@ def log_order_action(action: str, order_id: int) -> None:
 `src/services/order_service.py` (trimmed to orchestration):
 
 ```python
-"""Order service â€” orchestration layer."""
+"""Order service — orchestration layer."""
 from decimal import Decimal
 from order_validation import validate_order
 from order_pricing import calculate_subtotal, apply_discount, calculate_tax
@@ -256,13 +256,13 @@ If you prefer a subdirectory:
 ```
 Before:                          After:
 src/services/                    src/services/
-â””â”€â”€ order_service.py              â”œâ”€â”€ order/
-                                   â”‚   â”œâ”€â”€ __init__.py     (re-exports)
-                                   â”‚   â”œâ”€â”€ validation.py
-                                   â”‚   â”œâ”€â”€ pricing.py
-                                   â”‚   â”œâ”€â”€ repository.py
-                                   â”‚   â””â”€â”€ helpers.py
-                                   â””â”€â”€ order_service.py   (removed)
+└── order_service.py              ├── order/
+                                   │   ├── __init__.py     (re-exports)
+                                   │   ├── validation.py
+                                   │   ├── pricing.py
+                                   │   ├── repository.py
+                                   │   └── helpers.py
+                                   └── order_service.py   (removed)
 ```
 
 `src/services/order/__init__.py`:
@@ -289,7 +289,7 @@ __all__ = [
 
 - [ ] Create new `.py` files for extracted modules
 - [ ] Update or create `__init__.py` to re-export public symbols
-- [ ] Update all `from order_service import X` â†’ `from order_validation import X` etc.
+- [ ] Update all `from order_service import X` → `from order_validation import X` etc.
 - [ ] Remove extracted code from `order_service.py`
 - [ ] Run `python -c "from order_service import *"` or `pytest` to verify
 
@@ -318,7 +318,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { api } from "../../api";
 import { formatCurrency } from "../../utils";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────
 interface Order {
   id: number;
   customer: string;
@@ -333,7 +333,7 @@ interface OrderItem {
   price: number;
 }
 
-// â”€â”€â”€ Data Fetching Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Data Fetching Hook ──────────────────────────────
 function useOrders(filters?: Record<string, string>) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
@@ -358,7 +358,7 @@ function useOrders(filters?: Record<string, string>) {
   return { orders, loading, error, refetch: fetchOrders };
 }
 
-// â”€â”€â”€ Order Status Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Order Status Badge ──────────────────────────────
 function OrderStatusBadge({ status }: { status: Order["status"] }) {
   const colors: Record<string, string> = {
     pending: "bg-yellow-100 text-yellow-800",
@@ -370,7 +370,7 @@ function OrderStatusBadge({ status }: { status: Order["status"] }) {
   );
 }
 
-// â”€â”€â”€ Order Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Order Row ────────────────────────────────────────
 function OrderRow({ order }: { order: Order }) {
   return (
     <tr className="border-b hover:bg-gray-50">
@@ -384,7 +384,7 @@ function OrderRow({ order }: { order: Order }) {
   );
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ──────────────────────────────────
 export default function OrderDashboard() {
   const { orders, loading, error, refetch } = useOrders();
 
@@ -423,12 +423,12 @@ export default function OrderDashboard() {
 
 ```
 src/features/orders/
-â”œâ”€â”€ index.ts                   (barrel â€” re-exports public API)
-â”œâ”€â”€ types.ts                   (Order, OrderItem interfaces)
-â”œâ”€â”€ useOrders.ts               (data fetching hook)
-â”œâ”€â”€ OrderStatusBadge.tsx        (status badge component)
-â”œâ”€â”€ OrderRow.tsx                (table row component)
-â””â”€â”€ OrderDashboard.tsx          (main component, trimmed)
+├── index.ts                   (barrel — re-exports public API)
+├── types.ts                   (Order, OrderItem interfaces)
+├── useOrders.ts               (data fetching hook)
+├── OrderStatusBadge.tsx        (status badge component)
+├── OrderRow.tsx                (table row component)
+└── OrderDashboard.tsx          (main component, trimmed)
 ```
 
 `src/features/orders/types.ts`:
@@ -576,7 +576,7 @@ export type { Order, OrderItem } from "./types";
 
 - [ ] Create new `.ts`/`.tsx` files for extracted modules
 - [ ] Create `index.ts` barrel to re-export all public symbols
-- [ ] Update consumers: `import { X } from './OrderDashboard'` â†’ `import { X } from './orders'`
+- [ ] Update consumers: `import { X } from './OrderDashboard'` → `import { X } from './orders'`
 - [ ] Check for circular dependencies (A imports B imports A)
 - [ ] Run `tsc --noEmit` and `npm test`
 
@@ -611,7 +611,7 @@ import (
 	"time"
 )
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────
 type Order struct {
 	ID        int64
 	Customer  string
@@ -626,7 +626,7 @@ type OrderFilter struct {
 	Limit  int
 }
 
-// â”€â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Validation ───────────────────────────────────────
 func ValidateOrder(o *Order) error {
 	if o.Amount <= 0 {
 		return errors.New("amount must be positive")
@@ -637,7 +637,7 @@ func ValidateOrder(o *Order) error {
 	return nil
 }
 
-// â”€â”€â”€ Repository â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Repository ───────────────────────────────────────
 type Repository struct {
 	db *sql.DB
 }
@@ -657,7 +657,7 @@ func (r *Repository) List(ctx context.Context, filter OrderFilter) ([]*Order, er
 	return nil, nil
 }
 
-// â”€â”€â”€ Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Service ──────────────────────────────────────────
 type Service struct {
 	repo *Repository
 }
@@ -681,7 +681,7 @@ func (s *Service) PlaceOrder(ctx context.Context, o *Order) (*Order, error) {
 }
 ```
 
-**After (split into 3 files in the same package â€” no import changes needed within package):**
+**After (split into 3 files in the same package — no import changes needed within package):**
 
 `internal/order/types.go`:
 
@@ -786,18 +786,18 @@ If the extracted code should be **reusable across other packages**, move it to a
 
 ```
 internal/order/
-â”œâ”€â”€ service.go
-â”œâ”€â”€ repository.go
-â””â”€â”€ types.go
+├── service.go
+├── repository.go
+└── types.go
 
-# â†’ becomes:
+# → becomes:
 
 internal/
-â”œâ”€â”€ order/
-â”‚   â”œâ”€â”€ service.go
-â”‚   â””â”€â”€ types.go
-â””â”€â”€ orderdb/
-    â””â”€â”€ repository.go    â† new package `orderdb`
+├── order/
+│   ├── service.go
+│   └── types.go
+└── orderdb/
+    └── repository.go    ← new package `orderdb`
 ```
 
 Then consumers import: `import "myapp/internal/orderdb"`
@@ -808,7 +808,7 @@ Then consumers import: `import "myapp/internal/orderdb"`
 
 - [ ] Create new `.go` files in the same package directory (no import changes needed)
 - [ ] If creating a new package (subdirectory): add `package <name>` declaration
-- [ ] Update cross-package imports: change `import "myapp/internal/order"` â†’ `import "myapp/internal/orderdb"` if needed
+- [ ] Update cross-package imports: change `import "myapp/internal/order"` → `import "myapp/internal/orderdb"` if needed
 - [ ] Run `go build ./...` and `go test ./...`
 
 ---
@@ -836,7 +836,7 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────
 #[derive(Debug, Clone)]
 pub struct Order {
     pub id: i64,
@@ -853,7 +853,7 @@ pub enum OrderStatus {
     Cancelled,
 }
 
-// â”€â”€â”€ Repository â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Repository ───────────────────────────────────────
 pub struct Repository {
     pool: PgPool,
 }
@@ -874,7 +874,7 @@ impl Repository {
     }
 }
 
-// â”€â”€â”€ Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Service ──────────────────────────────────────────
 pub struct Service {
     repo: Repository,
 }
@@ -902,7 +902,7 @@ impl Service {
 
 **After (split into module files):**
 
-`src/order/mod.rs` â€” declare submodules and re-export:
+`src/order/mod.rs` — declare submodules and re-export:
 
 ```rust
 pub mod types;
@@ -999,28 +999,28 @@ impl Service {
 
 Two valid approaches:
 
-**Option A â€” Single file:**
+**Option A — Single file:**
 
 ```
-src/order.rs â€” contains everything
+src/order.rs — contains everything
 ```
 
-**Option B â€” Directory with files:**
+**Option B — Directory with files:**
 
 ```
 src/order/
-â”œâ”€â”€ mod.rs      â€” declares submodules, re-exports
-â”œâ”€â”€ types.rs
-â”œâ”€â”€ service.rs
-â””â”€â”€ repository.rs
+├── mod.rs      — declares submodules, re-exports
+├── types.rs
+├── service.rs
+└── repository.rs
 ```
 
-The parent file declares: `mod order;` â€” Rust automatically finds `src/order/mod.rs`.
+The parent file declares: `mod order;` — Rust automatically finds `src/order/mod.rs`.
 
 ### Import Update Checklist
 
 - [ ] Create submodule files with `pub mod` declarations in `mod.rs`
-- [ ] Update `use` paths: change `use crate::order::Type` â†’ `use crate::order::types::Type` if needed
+- [ ] Update `use` paths: change `use crate::order::Type` → `use crate::order::types::Type` if needed
 - [ ] Add `pub use` re-exports in `mod.rs` to preserve the public API
 - [ ] Run `cargo check` and `cargo test`
 
@@ -1059,7 +1059,7 @@ public class UserService {
         this.db = db;
     }
 
-    // â”€â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Validation ────────────────────────────────
     public void validateUser(User user) {
         if (user.getEmail() == null || !user.getEmail().contains("@")) {
             throw new IllegalArgumentException("Invalid email");
@@ -1069,7 +1069,7 @@ public class UserService {
         }
     }
 
-    // â”€â”€â”€ Business Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Business Logic ────────────────────────────
     public void registerUser(User user) {
         validateUser(user);
         user.setStatus("active");
@@ -1085,7 +1085,7 @@ public class UserService {
         return existing;
     }
 
-    // â”€â”€â”€ Data Access â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Data Access ───────────────────────────────
     public Optional<User> findById(Long id) {
         return db.findById(id);
     }
@@ -1217,9 +1217,9 @@ public class UserService {
 
 **Scenario:** `Services/UserService.cs` is 1000+ lines. You can split using `partial` classes or extract new classes.
 
-**Option A â€” Partial classes** (when the class is inherently a single unit but too large):
+**Option A — Partial classes** (when the class is inherently a single unit but too large):
 
-`UserService.Core.cs` (partial â€” main logic):
+`UserService.Core.cs` (partial — main logic):
 
 ```csharp
 namespace MyApp.Services;
@@ -1243,7 +1243,7 @@ public partial class UserService
 }
 ```
 
-`UserService.Validation.cs` (partial â€” validation logic):
+`UserService.Validation.cs` (partial — validation logic):
 
 ```csharp
 namespace MyApp.Services;
@@ -1261,7 +1261,7 @@ public partial class UserService
 }
 ```
 
-`UserService.DataAccess.cs` (partial â€” database operations):
+`UserService.DataAccess.cs` (partial — database operations):
 
 ```csharp
 namespace MyApp.Services;
@@ -1274,7 +1274,7 @@ public partial class UserService
 }
 ```
 
-**Option B â€” Extract new classes** (preferred for clear separation of concerns):
+**Option B — Extract new classes** (preferred for clear separation of concerns):
 
 `Services/UserValidation.cs`:
 
@@ -1337,23 +1337,23 @@ public class UserRepository
 # app/models/order.rb (1000+ lines)
 
 class Order < ApplicationRecord
-  # â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── Constants ─────────────────────────────────────
   MIN_AMOUNT = 10.00
   MAX_DISCOUNT = 50.00
 
-  # â”€â”€â”€ Associations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── Associations ──────────────────────────────────
   belongs_to :user
   has_many :line_items, dependent: :destroy
 
-  # â”€â”€â”€ Validations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── Validations ───────────────────────────────────
   validates :amount, numericality: { greater_than_or_equal_to: MIN_AMOUNT }
   validates :status, inclusion: { in: %w[pending shipped cancelled] }
 
-  # â”€â”€â”€ Scopes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── Scopes ────────────────────────────────────────
   scope :recent, -> { where('created_at > ?', 7.days.ago) }
   scope :by_status, ->(status) { where(status: status) }
 
-  # â”€â”€â”€ Pricing Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── Pricing Logic ─────────────────────────────────
   def subtotal
     line_items.sum { |li| li.price * li.quantity }
   end
@@ -1363,7 +1363,7 @@ class Order < ApplicationRecord
     save!
   end
 
-  # â”€â”€â”€ State Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─── State Management ──────────────────────────────
   def ship!
     update!(status: 'shipped', shipped_at: Time.current)
   end
@@ -1451,7 +1451,7 @@ end
 
 ### PSR-4 Autoloading Mechanics
 
-- **PSR-4:** Namespace maps directly to directory structure. `App\Services\OrderService` â†’ `app/Services/OrderService.php`.
+- **PSR-4:** Namespace maps directly to directory structure. `App\Services\OrderService` → `app/Services/OrderService.php`.
 - **One class per file:** Required by PSR-4.
 - **File naming:** PascalCase matches class name (`OrderService.php`).
 - **Import:** `use App\Services\OrderService;`
@@ -1473,7 +1473,7 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    // â”€â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Validation ─────────────────────────────────
     private function validateOrder(Request $request): array
     {
         return $request->validate([
@@ -1485,7 +1485,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Actions ────────────────────────────────────
     public function store(Request $request)
     {
         $data = $this->validateOrder($request);
@@ -1512,7 +1512,7 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    // â”€â”€â”€ Queries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Queries ────────────────────────────────────
     public function index(Request $request)
     {
         $orders = Order::with('items')
@@ -1678,7 +1678,7 @@ Use code-search tools to find every file that references the original module:
 | **Re-export**       | Passes through via barrel file | `export * from './module'` |
 | **Dynamic import**  | Runtime import                 | `import('./module')` in JS |
 
-### Step 3: Map Old â†’ New Import Paths
+### Step 3: Map Old → New Import Paths
 
 | Old Path                             | New Path                                | Notes                 |
 | ------------------------------------ | --------------------------------------- | --------------------- |
@@ -1700,7 +1700,7 @@ When splitting a file, decide placement based on:
 
 | Condition                                        | Recommendation                                                 |
 | ------------------------------------------------ | -------------------------------------------------------------- |
-| 1-2 extracted files, tightly coupled to original | **Same directory** â€” flat structure                            |
+| 1-2 extracted files, tightly coupled to original | **Same directory** — flat structure                            |
 | 1-2 extracted files, loosely coupled             | **Same directory** or sibling utility directory                |
 | **3+ extracted files**                           | **Subdirectory** named after original file (without extension) |
 | Extracted modules form a clear domain boundary   | **Subdirectory** even with 2 files                             |
@@ -1722,12 +1722,12 @@ When splitting a file, decide placement based on:
 ```
 Before:                         After:
 src/services/                   src/services/
-â””â”€â”€ order_service.py             â”œâ”€â”€ order/
-                                  â”‚   â”œâ”€â”€ __init__.py        (re-exports)
-                                  â”‚   â”œâ”€â”€ validation.py
-                                  â”‚   â”œâ”€â”€ pricing.py
-                                  â”‚   â””â”€â”€ repository.py
-                                  â””â”€â”€ order_service.py      (removed or trimmed)
+└── order_service.py             ├── order/
+                                  │   ├── __init__.py        (re-exports)
+                                  │   ├── validation.py
+                                  │   ├── pricing.py
+                                  │   └── repository.py
+                                  └── order_service.py      (removed or trimmed)
 ```
 
 ---
@@ -1738,10 +1738,10 @@ src/services/                   src/services/
 
 When a large file has internal functions/classes that reference each other:
 
-1. **Map internal dependencies** â€” identify the cycle
-2. **Extract the common core** â€” code both sides depend on goes into a shared module
-3. **Break the cycle** â€” the shared module has no dependencies on the extracted modules
-4. **Verify** â€” ensure no circular imports at module level
+1. **Map internal dependencies** — identify the cycle
+2. **Extract the common core** — code both sides depend on goes into a shared module
+3. **Break the cycle** — the shared module has no dependencies on the extracted modules
+4. **Verify** — ensure no circular imports at module level
 
 **Example (Python):**
 
@@ -1757,24 +1757,24 @@ def save(order): ...
 
 ```python
 # Fix: extract the shared dependency
-# order_validation.py â€” validate() only (no circular dep)
-# order_repository.py â€” save() only (no circular dep)
-# order_service.py â€” import both, orchestrate
+# order_validation.py — validate() only (no circular dep)
+# order_repository.py — save() only (no circular dep)
+# order_service.py — import both, orchestrate
 ```
 
 ### High Blast Radius (File Imported by 20+ Files)
 
 1. **Keep the original file** as a thin facade that re-exports
-2. **Create a barrel file** â€” the original becomes: imports + re-exports all public symbols
-3. **Staged approach** â€” update consumers in batches (5 at a time)
-4. **Verify after each batch** â€” run tests
+2. **Create a barrel file** — the original becomes: imports + re-exports all public symbols
+3. **Staged approach** — update consumers in batches (5 at a time)
+4. **Verify after each batch** — run tests
 
 ### Mixed-Content File (JSX/TSX with Inline CSS)
 
-1. **Extract styles** â†’ separate CSS/CSS-in-JS file
-2. **Extract sub-components** â†’ separate `.tsx` files
-3. **Extract logic** â†’ separate hooks/utils files
-4. **Keep the component boundary** â€” one component per file
+1. **Extract styles** → separate CSS/CSS-in-JS file
+2. **Extract sub-components** → separate `.tsx` files
+3. **Extract logic** → separate hooks/utils files
+4. **Keep the component boundary** — one component per file
 
 ### No Clear Boundaries
 
@@ -1782,15 +1782,15 @@ If you cannot identify 2+ natural module boundaries:
 
 1. **Flag as "needs human review"** in the report
 2. **Do not propose a specific split plan**
-3. **Document why** â€” file appears tightly coupled internally
-4. **Suggest tools** â€” recommend a cyclomatic complexity analyzer
+3. **Document why** — file appears tightly coupled internally
+4. **Suggest tools** — recommend a cyclomatic complexity analyzer
 
 ### Entry Point + Business Logic Mixed
 
 When a file is both an entry point (e.g., `main.py`, `app.js`) and contains business logic:
 
 1. **Extract business logic** to separate module files
-2. **Keep the entry point** thin â€” just initialization and imports
+2. **Keep the entry point** thin — just initialization and imports
 3. **Import extracted modules** from the entry point
 
 ---
@@ -1801,7 +1801,7 @@ When a file is both an entry point (e.g., `main.py`, `app.js`) and contains busi
 
 Before any split, the implementing AI must:
 
-1. **Identify the public API** â€” all exported symbols, classes, functions
+1. **Identify the public API** — all exported symbols, classes, functions
 2. **Write a test** that exercises the public API
 3. **Run the test** to verify it passes against the current monolithic file
 
@@ -1810,7 +1810,7 @@ Before any split, the implementing AI must:
 After splitting, the AI must:
 
 1. **Run the pre-split test** against the new module structure
-2. **Verify same results** â€” test passes without modification (or with only import path changes)
+2. **Verify same results** — test passes without modification (or with only import path changes)
 3. **Run full test suite** for the project or affected module
 4. **Run type checker** where applicable
 
