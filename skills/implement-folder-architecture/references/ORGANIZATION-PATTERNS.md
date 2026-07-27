@@ -1,11 +1,4 @@
-# Codebase Organization Patterns by Language
-
-This reference helps the `implement-folder-architecture` skill make **language-appropriate restructuring decisions** when executing folder migrations. When moving files and refactoring imports, the agent should adapt its approach to the project's language and framework conventions.
-
-> **Canonical source:** `_shared/references/ORGANIZATION-PATTERNS.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
-
----
-
+﻿---
 ## Universal Principles (Any Language)
 
 These principles apply regardless of stack:
@@ -116,6 +109,7 @@ components/
 ```
 
 **Next.js routing conventions:**
+
 - **File paths ARE routes** — `app/users/[id]/page.tsx` → `/users/:id`
 - **Route groups** `(group)` — organize without affecting URL structure
 - **Private folders** `_folder` — prefix with underscore to exclude from routing (for co-located components, utils, etc.)

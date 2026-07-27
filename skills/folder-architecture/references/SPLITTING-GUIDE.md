@@ -1,11 +1,4 @@
-# File Splitting Guide — Language-Specific Reference
-
-When the `folder-architecture` skill detects that a file is oversized (>400 lines) or will cross that threshold during a modification, this guide provides **language-specific mechanics** for splitting it correctly.
-
-> **Canonical source:** `_shared/references/SPLITTING-GUIDE.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
-
----
-
+﻿---
 ## Universal Principles (Any Language)
 
 These principles apply regardless of stack:
