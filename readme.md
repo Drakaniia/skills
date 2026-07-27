@@ -101,13 +101,45 @@ For per-agent permissions, configure in `opencode.json`:
     "skill": {
       "audit-codebase": "allow",
       "folder-architecture": "allow",
-      "code-design": "allow"
+      "code-design": "allow",
+      "implement-folder-architecture": "allow"
     }
   }
 }
 ```
 
 Each skill follows the [Agent Skills open standard](https://openagentskills.dev) — one `SKILL.md` per directory, YAML frontmatter with `name` and `description`, progressive disclosure loading.
+
+## Repository Structure
+
+```
+skills/
+├── _shared/                          # Canonical shared references
+│   ├── references/                   #   Synced to skill copies
+│   └── scripts/                      #   Sync utilities
+├── skills/
+│   ├── audit-codebase/               # Scan → report
+│   ├── implement-folder-architecture/ # Report → execution
+│   ├── folder-architecture/          # Prevention (file ops)
+│   └── code-design/                  # Prevention (function level)
+├── commands/                         # CLI command definitions
+├── .github/workflows/                # CI validation
+├── package.json                      # npx skills add support
+├── skills.json                       # Tooling manifest
+├── CONTRIBUTING.md
+└── CHANGELOG.md
+```
+
+Each skill follows the OAS progressive disclosure pattern:
+
+```
+<skill>/
+├── SKILL.md              # Loaded on activation (<500 lines)
+├── scripts/              # Executable utilities (loaded on demand)
+├── references/           # Detailed reference files (loaded on demand)
+├── agents/               # Platform agent configs
+└── assets/               # Templates, resources (loaded on demand)
+```
 
 ## Commands
 
@@ -127,12 +159,13 @@ After installation, use these commands in your agent's TUI:
 
 ## Contributing
 
-Skills are structured as standalone `SKILL.md` files with optional `references/`, `scripts/`, and `agents/` subdirectories. If you'd like to add a skill or improve an existing one:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines. Quick overview:
 
-1. Follow the [Agent Skills Specification](https://openagentskills.dev/docs/specification) for directory structure and frontmatter
-2. Keep `SKILL.md` under 500 lines — move depth into reference files
-3. Ensure the skill is language-agnostic or explicitly scopes its language support
-4. Submit a PR
+1. Follow the [Agent Skills Specification](https://openagentskills.dev/docs/specification)
+2. Keep `SKILL.md` under 500 lines
+3. Update shared references in `_shared/references/` and sync to skills
+4. Validate: `npx skills-ref validate skills/<skill-name>`
+5. Submit a PR
 
 ## License
 
