@@ -1,6 +1,8 @@
 # Codebase Organization Patterns by Language
 
-This reference helps the `audit-codebase` skill make **language-appropriate recommendations**. When flagging issues, the agent should adapt its suggestions to the project's language and framework conventions.
+This reference helps the `audit-codebase` skill make **language-appropriate recommendations** when flagging structural issues. When suggesting fixes, the agent should adapt its recommendations to the project's language and framework conventions.
+
+> **Canonical source:** `_shared/references/ORGANIZATION-PATTERNS.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
 
 ---
 
