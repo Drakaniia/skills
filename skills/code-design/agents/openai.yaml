@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Design"
+  short_description: "Enforce function-level design principles — pure functions, single responsibility, guard clauses, side-effect management"
+  default_prompt: "Use $code-design to audit function-level code quality: check for deeply nested code, mixed responsibilities, impure functions, missing guard clauses, and high cognitive load. Apply the 5-step checklist to each function being written or reviewed."
