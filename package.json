@@ -1,0 +1,26 @@
+{
+  "name": "skills",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Language-agnostic agent skills for keeping codebases healthy — audits structure, executes fixes, prevents decay, and ensures well-designed code.",
+  "keywords": [
+    "agent-skills",
+    "codebase-health",
+    "audit-codebase",
+    "folder-architecture",
+    "code-design",
+    "refactoring"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Drakaniia/skills.git"
+  },
+  "scripts": {
+    "validate": "skills-ref validate ./skills/*",
+    "sync-refs": "bash _shared/scripts/sync-references.sh"
+  },
+  "devDependencies": {
+    "skills-ref": "^1.0.0"
+  }
+}

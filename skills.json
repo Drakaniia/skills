@@ -1,0 +1,26 @@
+{
+  "name": "Drakaniia/skills",
+  "description": "Codebase health agent skills — audit structure, execute refactoring, prevent decay, and enforce clean code design.",
+  "skills": {
+    "audit-codebase": {
+      "name": "audit-codebase",
+      "description": "Scan any codebase and flag structural health issues — folder bloat, oversized files, deep nesting, naming inconsistencies, orphaned files, doc sprawl, and empty directories.",
+      "path": "skills/audit-codebase"
+    },
+    "folder-architecture": {
+      "name": "folder-architecture",
+      "description": "Enforce best-practice folder organization before every file creation or modification — prevents structural decay at the point of change.",
+      "path": "skills/folder-architecture"
+    },
+    "code-design": {
+      "name": "code-design",
+      "description": "Enforce function-level design principles — pure functions, single responsibility, guard clauses, side-effect management, and top-to-bottom readability.",
+      "path": "skills/code-design"
+    },
+    "implement-folder-architecture": {
+      "name": "implement-folder-architecture",
+      "description": "Execute a folder architecture refactor from an audit report — moves files, splits directories, refactors imports, and verifies builds incrementally.",
+      "path": "skills/implement-folder-architecture"
+    }
+  }
+}
