@@ -1458,10 +1458,10 @@ end
 
 ### PSR-4 Autoloading Mechanics
 
-- **PSR-4:** Namespace maps directly to directory structure. `App\\Services\\OrderService` → `app/Services/OrderService.php`.
+- **PSR-4:** Namespace maps directly to directory structure. `App\Services\OrderService` → `app/Services/OrderService.php`.
 - **One class per file:** Required by PSR-4.
 - **File naming:** PascalCase matches class name (`OrderService.php`).
-- **Import:** `use App\\Services\\OrderService;`
+- **Import:** `use App\Services\OrderService;`
 - **Composer:** Run `composer dump-autoload` after moving/renaming files to regenerate the autoload map.
 
 ### Splitting a 1000-line Controller
@@ -1673,7 +1673,7 @@ Use code-search tools to find every file that references the original module:
 - **Java:** Search for `import <package>.<OriginalClass>`
 - **C#:** Search for `using <namespace>;`
 - **Ruby:** Search for `require`, `require_relative`, and class references
-- **PHP:** Search for `use <Namespace>\\<Class>`
+- **PHP:** Search for `use <Namespace>\<Class>`
 
 ### Step 2: Categorize Each Consumer
 
