@@ -12,6 +12,7 @@ allowed-tools:
   - bash
 metadata:
   language: language-agnostic
+  version: "1.0.0"
   tags: folder-architecture, code-organization, file-structure, refactoring, migration, code-migration, structural-refactor
 ---
 
