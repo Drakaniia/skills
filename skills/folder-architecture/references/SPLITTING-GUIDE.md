@@ -2,7 +2,7 @@
 
 When the `folder-architecture` skill detects that a file is oversized (>400 lines) or will cross that threshold during a modification, this guide provides **language-specific mechanics** for splitting it correctly.
 
-> This reference is shared with the `audit-codebase` skill. See `skills/audit-codebase/references/SPLITTING-GUIDE.md` for the canonical version.
+> **Canonical source:** `_shared/references/SPLITTING-GUIDE.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
 
 ---
 

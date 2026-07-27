@@ -2,6 +2,8 @@
 
 This reference helps the `implement-folder-architecture` skill make **language-appropriate restructuring decisions** when executing folder migrations. When moving files and refactoring imports, the agent should adapt its approach to the project's language and framework conventions.
 
+> **Canonical source:** `_shared/references/ORGANIZATION-PATTERNS.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
+
 ---
 
 ## Universal Principles (Any Language)

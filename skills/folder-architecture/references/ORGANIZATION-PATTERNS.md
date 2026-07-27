@@ -2,7 +2,7 @@
 
 This reference helps the `folder-architecture` skill make **language-appropriate placement decisions** when creating or modifying files. When deciding where to place a new file, the agent should adapt its decision to the project's language and framework conventions.
 
-> This reference is shared with the `audit-codebase` skill. See `skills/audit-codebase/references/ORGANIZATION-PATTERNS.md` for the canonical version.
+> **Canonical source:** `_shared/references/ORGANIZATION-PATTERNS.md`. The content below is shared identically across all skills. Edit the canonical copy and run `_shared/scripts/sync-references.sh` to sync.
 
 ---
 
