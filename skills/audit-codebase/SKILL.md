@@ -12,6 +12,7 @@ allowed-tools:
   - look_at
 metadata:
   language: language-agnostic
+  version: "1.0.0"
   tags: codebase-audit, codebase-health, structural-analysis, refactoring, code-quality
 ---
 

@@ -12,6 +12,7 @@ allowed-tools:
   - bash
 metadata:
   language: language-agnostic
+  version: "1.0.0"
   tags: code-design, code-quality, clean-code, function-design, cognitive-load, single-responsibility, pure-functions, side-effects, guard-clauses
 ---
 
