@@ -2,9 +2,12 @@
 # Sync shared reference files to all skills.
 # Run from the repo root: ./_shared/scripts/sync-references.sh
 #
-# This copies the canonical reference files from _shared/references/
-# to each skill's references/ directory, preserving the skill-specific
-# introductory paragraph (first 5 lines).
+# Preserves the skill-specific intro (everything before the first ---)
+# and replaces the shared body with the canonical copy's content.
+#
+# Uses marker-based boundary detection (first "---" line) instead of
+# brittle line offsets, since different skills have different numbers
+# of header lines.
 
 set -euo pipefail
 
@@ -22,15 +25,33 @@ sync_ref() {
     return
   fi
 
+  if [ ! -s "$canonical" ]; then
+    echo "⚠️  Canonical $canonical is empty, skipping"
+    return
+  fi
+
   for skill in audit-codebase folder-architecture implement-folder-architecture; do
     local target="$REPO_ROOT/skills/$skill/references/$ref_name"
     if [ -f "$target" ]; then
-      # Preserve first 5 lines of target (skill-specific intro), replace the rest
-      local head_lines=$(head -n 5 "$target")
-      local body_lines=$(tail -n +6 "$canonical")
-      echo "$head_lines" > "$target"
-      echo "$body_lines" >> "$target"
-      echo "✅ Synced $ref_name -> $skill"
+      # Find the first "---" line in the target — that's the boundary
+      # between skill-specific intro and shared body.
+      local boundary
+      boundary=$(awk '/^---$/ { print NR; exit }' "$target")
+
+      if [ -z "$boundary" ]; then
+        echo "⚠️  No '---' boundary found in $target, using full replacement"
+        cp "$canonical" "$target"
+        echo "⚠️  Replaced $ref_name -> $skill (no boundary found)"
+      else
+        # Keep lines 1..boundary (the intro, including the --- marker)
+        head -n "$boundary" "$target" > "${target}.tmp"
+
+        # Append canonical body from line 2 onwards (skip canonical's opening ---)
+        tail -n +2 "$canonical" >> "${target}.tmp"
+
+        mv "${target}.tmp" "$target"
+        echo "✅ Synced $ref_name -> $skill (boundary at line $boundary)"
+      fi
     else
       # No existing file, copy whole thing
       cp "$canonical" "$target"

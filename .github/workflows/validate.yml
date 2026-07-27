@@ -79,8 +79,10 @@ jobs:
             for skill in audit-codebase folder-architecture implement-folder-architecture; do
               skill_copy="skills/$skill/references/$ref"
               if [ -f "$skill_copy" ]; then
-                # Compare body (skip first 5 lines for skill-specific intro)
-                if ! diff <(tail -n +6 "$canonical") <(tail -n +6 "$skill_copy") > /dev/null 2>&1; then
+                # Compare from the first "## Universal Principles" heading onwards.
+                # This avoids brittle line offsets since different skills have
+                # different header lengths for their skill-specific intros.
+                if ! diff <(sed -n '/^## Universal Principles/,$p' "$canonical") <(sed -n '/^## Universal Principles/,$p' "$skill_copy") > /dev/null 2>&1; then
                   echo "❌ $skill_copy differs from canonical $canonical"
                   errors=$((errors + 1))
                 else
