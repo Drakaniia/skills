@@ -1,10 +1,25 @@
-﻿---
+## Core Concepts — Glossary & Enforcement
+
+These 5 terms are the textbook principles behind every threshold and pattern below. Each maps to a concrete enforcement in the skills:
+
+| Concept                                   | Definition                                                                                                                                                                                                                                            | Enforced By                                                                                 | Threshold / Check                                                                                                                                                      |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Separation of Concerns (SoC)**          | Splitting a program into distinct sections so each addresses a separate piece of information or goal. At folder level: business logic, presentation, data access in distinct areas. At function level: pure logic vs imperative shell (I/O at edges). | `folder-architecture` + `code-design`                                                       | `>400 lines` = mixed concerns (flagged); `shared/` must not contain business logic; `code-design` Imperative Shell pattern                                             |
+| **Single Responsibility Principle (SRP)** | A file, class, or module should have only one reason to change (the "S" in SOLID). At function level: one sentence without "and"/"then".                                                                                                              | `code-design` (function-level), `audit-codebase` + `folder-architecture` (file-level proxy) | Function `>30 lines` or `>2 indent` or `"and" in description` → split; File `>400 lines` with distinct comment-header sections → extract modules                       |
+| **Modularity**                            | Dividing a system into smaller, self-contained pieces (modules) that can be combined or swapped out.                                                                                                                                                  | All 4 skills via `SPLITTING-GUIDE.md` + barrel files                                        | `>30 files/dir` → split by domain; `1-2 extracted modules` = flat files, `3+` = subdirectory + `index.ts/__init__.py/mod.rs` barrel                                    |
+| **Layered Architecture**                  | Grouping files by what they do _technically_ (e.g., `controllers/`, `services/`, `repositories/`, `models/`).                                                                                                                                         | `folder-architecture` Architecture Pattern Reference #2                                     | Recommended for **small projects <50 files**; flagged if layered dir exceeds `30 files`                                                                                |
+| **Feature-Based Architecture**            | Grouping files by what they do _for the user_ — all files for a single feature (e.g., `users/`, `checkout`, `billing`) in one folder.                                                                                                                 | `folder-architecture` Architecture Pattern Reference #1                                     | Recommended for **medium 50-500 files** and **monorepos**; enforced via `Feature proximity` + `Dumping ground` checks (`utils/` → feature-local unless `3+ consumers`) |
+
+> **How they connect:** `SoC` is the goal → `SRP` is the file/function test for SoC → `Modularity` is the structural outcome (barrels, split mechanics) → `Layered` vs `Feature-Based` is the pattern choice for organizing those modules. See decision tree at bottom of this file and `SPLITTING-GUIDE.md` for mechanics.
+
+---
+
 ## Universal Principles (Any Language)
 
 These principles apply regardless of stack:
 
 1. **Root is for metadata only** — README.md, LICENSE, CI config, dependency manifests
-2. **Separation of concerns** — Business logic, presentation, and data access in distinct areas
+2. **Separation of concerns** — Business logic, presentation, and data access in distinct areas _(see SoC above)_
 3. **Locality** — Related code lives close together (tests near implementation)
 4. **Flat until necessary** — Don't nest deeply until a directory has 5+ items
 5. **Mirror tests** — Test structure should mirror source structure
