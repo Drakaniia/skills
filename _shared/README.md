@@ -32,11 +32,13 @@ _shared/
 ```
 
 Or manually: copy `_shared/references/ORGANIZATION-PATTERNS.md` to:
+
 - `skills/audit-codebase/references/ORGANIZATION-PATTERNS.md`
 - `skills/folder-architecture/references/ORGANIZATION-PATTERNS.md`
 - `skills/implement-folder-architecture/references/ORGANIZATION-PATTERNS.md`
 
 And `_shared/references/SPLITTING-GUIDE.md` to:
+
 - `skills/audit-codebase/references/SPLITTING-GUIDE.md`
 - `skills/folder-architecture/references/SPLITTING-GUIDE.md`
 - `skills/implement-folder-architecture/references/SPLITTING-GUIDE.md`

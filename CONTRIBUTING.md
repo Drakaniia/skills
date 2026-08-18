@@ -37,6 +37,7 @@ skills/<skill-name>/
 Some reference files (`ORGANIZATION-PATTERNS.md`, `SPLITTING-GUIDE.md`) are duplicated across skills because the OAS spec requires self-contained skills. The canonical copies live in `_shared/references/`.
 
 **When updating a shared reference:**
+
 1. Edit `_shared/references/<file>.md`
 2. Run `_shared/scripts/sync-references.sh` to sync to all skills
 3. Commit both the canonical copy and the synced copies
