@@ -3,13 +3,13 @@ name: Validate Skills
 on:
   pull_request:
     paths:
-      - 'skills/**'
-      - '_shared/**'
+      - "skills/**"
+      - "_shared/**"
   push:
     branches: [main]
     paths:
-      - 'skills/**'
-      - '_shared/**'
+      - "skills/**"
+      - "_shared/**"
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install validation tool
         run: npm install -g skills-ref

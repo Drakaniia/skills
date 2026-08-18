@@ -8,8 +8,8 @@
 
 ### New / Modified Skills
 
-| Skill | Change |
-| ----- | ------ |
+| Skill        | Change                |
+| ------------ | --------------------- |
 | `skills/...` | <!-- what changed --> |
 
 ### Documentation
@@ -28,6 +28,7 @@ git log origin/main..HEAD --oneline
 -->
 
 ```
+
 ```
 
 ## Checklist
