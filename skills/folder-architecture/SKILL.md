@@ -10,6 +10,7 @@ allowed-tools:
   - write
   - edit
   - bash
+  - ask_user
 metadata:
   language: language-agnostic
   version: "1.0.0"
@@ -70,6 +71,23 @@ Scan the project to detect:
 - **Existing barrel files**: Are there `index.ts`, `__init__.py`, `mod.rs` files?
 
 > **Implementation tip**: Read 3-5 existing files from the target directory to detect patterns. If the directory is empty, check sibling directories.
+
+#### Step 1a: Confirm Architecture Pattern (ask_user checkpoint)
+
+If detection is **ambiguous** — mixed signals, blank project, or borderline size (40-60 files, 400-600 files, or unclear business domains) — **MUST use `ask_user` tool** before placing files:
+
+```
+ask_user(
+  question: "Architecture pattern is ambiguous. Which should I enforce?",
+  options:
+    a) Feature-Based (Recommended for 50-500 files / clear domains) — e.g., src/users/, src/billing/
+    b) Layered (Recommended for <50 files / simple CRUD) — e.g., src/controllers/, src/services/
+    c) Hybrid (Layered-by-Feature, for >500 files / scaling) — e.g., src/features/users/application/
+    d) Keep existing mixed pattern — don't restructure, just match current placement
+)
+```
+
+**When to skip `ask_user`:** Pattern is clear (e.g., `src/features/` exists → feature-first; `src/controllers/` + `src/services/` with <30 files → layered; framework mandates structure like Next.js App Router). **When to require `ask_user`:** Transition zone per [_shared/references/ORGANIZATION-PATTERNS.md Glossary & Decision Tree_](../_shared/references/ORGANIZATION-PATTERNS.md) and `Core Concepts` above — never silently auto-migrate between Layered ↔ Feature-Based without user confirmation.
 
 ### Step 2: Check Target Directory Health
 
