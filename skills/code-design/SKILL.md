@@ -305,6 +305,13 @@ Activate this skill whenever:
 
 ## Interaction with Other Skills
 
+> **Core Concepts mapping (see `_shared/references/ORGANIZATION-PATTERNS.md` Glossary):**
+>
+> - **SoC** at folder level = `folder-architecture` (`shared/` isolation, `>400L` flag) → at function level = **this skill's Imperative Shell** (pure core vs side effects at edges)
+> - **SRP** at file level = "one reason to change" per file (audit: `>400L` with distinct sections) → at function level = **this skill's "And" Test** (`validate AND calculate AND save` → split)
+> - **Modularity** = outcome of applying both — enforced via `SPLITTING-GUIDE.md` barrel mechanics (`index.ts/__init__.py/mod.rs`)
+> - **Layered vs Feature-Based** = organizational pattern for those modules — decided by `folder-architecture` Step 1 (size-based decision tree), not by this skill
+
 | Skill                             | This skill adds                                                                                                           |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **folder-architecture**           | Handles **file-level** checks (where files go); this handles **function-level** checks (how code is written inside files) |
