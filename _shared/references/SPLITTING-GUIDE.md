@@ -1,4 +1,3 @@
-﻿---
 ## Universal Principles (Any Language)
 
 These principles apply regardless of stack:
