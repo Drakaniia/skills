@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
+# sync-references.sh
 # Sync shared reference files to all skills.
 # Run from the repo root: ./_shared/scripts/sync-references.sh
 #
-# Preserves the skill-specific intro (everything before the first ---)
-# and replaces the shared body with the canonical copy's content.
+# Skills are self-contained per the Agent Skills spec, so shared reference
+# files are duplicated into each skill's references/ directory. The copies are
+# byte-identical replicas of the canonical files in _shared/references/ — no
+# per-skill intros. (Earlier marker-based splicing that tried to preserve an
+# intro was not idempotent: the first "---" in a file is ambiguous when the
+# shared body itself contains "---" separators, and re-running the sync kept
+# appending duplicated content on top of already-synced copies.)
 #
-# Uses marker-based boundary detection (first "---" line) instead of
-# brittle line offsets, since different skills have different numbers
-# of header lines.
+# This script overwrites each copy with the canonical file, so it is
+# idempotent by construction: a second run changes nothing.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 SHARED_REF="$REPO_ROOT/_shared/references"
+SKILLS="audit-codebase folder-architecture implement-folder-architecture"
 
 echo "Syncing shared references to skills..."
 
@@ -30,32 +36,21 @@ sync_ref() {
     return
   fi
 
-  for skill in audit-codebase folder-architecture implement-folder-architecture; do
+  for skill in $SKILLS; do
     local target="$REPO_ROOT/skills/$skill/references/$ref_name"
-    if [ -f "$target" ]; then
-      # Find the first "---" line in the target — that's the boundary
-      # between skill-specific intro and shared body.
-      local boundary
-      boundary=$(awk '/^---$/ { print NR; exit }' "$target")
 
-      if [ -z "$boundary" ]; then
-        echo "⚠️  No '---' boundary found in $target, using full replacement"
-        cp "$canonical" "$target"
-        echo "⚠️  Replaced $ref_name -> $skill (no boundary found)"
-      else
-        # Keep lines 1..boundary (the intro, including the --- marker)
-        head -n "$boundary" "$target" > "${target}.tmp"
+    if cmp -s "$canonical" "$target" 2>/dev/null; then
+      echo "✅ $ref_name -> $skill already in sync"
+      continue
+    fi
 
-        # Append canonical body from line 2 onwards (skip canonical's opening ---)
-        tail -n +2 "$canonical" >> "${target}.tmp"
+    cp "$canonical" "$target"
 
-        mv "${target}.tmp" "$target"
-        echo "✅ Synced $ref_name -> $skill (boundary at line $boundary)"
-      fi
+    if cmp -s "$canonical" "$target"; then
+      echo "✅ Synced $ref_name -> $skill"
     else
-      # No existing file, copy whole thing
-      cp "$canonical" "$target"
-      echo "✅ Created $ref_name in $skill"
+      echo "❌ Sync failed for $ref_name -> $skill" >&2
+      exit 1
     fi
   done
 }
