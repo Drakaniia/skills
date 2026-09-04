@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **Shared reference sync corruption** — `SPLITTING-GUIDE.md` copies in all three skills had their opening section duplicated (the first 14 lines appeared twice), so the CI cross-reference check was failing. `_shared/scripts/sync-references.sh` was not idempotent: it spliced the canonical body at the first `---` line, which is ambiguous when the shared body itself contains `---` separators. It now overwrites each skill copy with the canonical file byte-for-byte, making repeated runs a no-op. CI compares full files instead of from a marker heading so this class of drift fails loudly.
+
 ## [1.0.0] — 2026-07-27
 
 ### Added
