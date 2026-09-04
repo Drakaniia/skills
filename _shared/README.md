@@ -10,7 +10,7 @@ This `_shared/` directory serves as the **source of truth** for those files. Whe
 
 1. Edit the canonical copy in `_shared/references/`
 2. Sync the change to each skill's `references/` directory
-3. Skills that differ only in their introductory paragraph — keep the intro skill-specific but the main body in sync
+3. Skill copies are **byte-identical replicas** of the canonical file — no per-skill intros. Earlier marker-based splicing was not idempotent (the first `---` in a file is ambiguous when the shared body itself contains `---` separators) and corrupted copies, so sync is now a plain overwrite.
 
 ## Directory Structure
 
@@ -31,14 +31,11 @@ _shared/
 ./_shared/scripts/sync-references.sh
 ```
 
-Or manually: copy `_shared/references/ORGANIZATION-PATTERNS.md` to:
+The sync script overwrites each skill copy with the canonical file and is idempotent (a second run is a no-op). Run it and commit both the canonical copy and the synced copies.
 
-- `skills/audit-codebase/references/ORGANIZATION-PATTERNS.md`
-- `skills/folder-architecture/references/ORGANIZATION-PATTERNS.md`
-- `skills/implement-folder-architecture/references/ORGANIZATION-PATTERNS.md`
+To verify manually, the copies must be byte-identical to the canonical file, e.g.:
 
-And `_shared/references/SPLITTING-GUIDE.md` to:
-
-- `skills/audit-codebase/references/SPLITTING-GUIDE.md`
-- `skills/folder-architecture/references/SPLITTING-GUIDE.md`
-- `skills/implement-folder-architecture/references/SPLITTING-GUIDE.md`
+```bash
+diff _shared/references/ORGANIZATION-PATTERNS.md skills/audit-codebase/references/ORGANIZATION-PATTERNS.md
+diff _shared/references/SPLITTING-GUIDE.md skills/audit-codebase/references/SPLITTING-GUIDE.md
+```
