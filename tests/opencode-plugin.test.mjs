@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { stripFrontmatter } from "../hooks/session-start.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PLUGIN = join(ROOT, ".opencode", "plugins", "codebase-health.mjs");
+const PLUGIN = join(ROOT, ".opencode", "plugins", "codebase-health.js");
 
 async function loadPlugin(env) {
   for (const k of ["CODEBASE_HEALTH"]) delete process.env[k];

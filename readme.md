@@ -31,9 +31,14 @@ Add the package to the `plugin` array in `opencode.json`:
 ```
 
 OpenCode has no `SessionStart` hook, so the package ships a small OpenCode
-adapter at `.opencode/plugins/codebase-health.mjs` (its `main`). It registers
-the bundled `skills/` directory and injects the router via
-`experimental.chat.system.transform` — the same opt-out rules apply.
+adapter at `.opencode/plugins/codebase-health.js` (its `main`). It registers
+the bundled `skills/` directory, registers the `/codebase-health` command, and
+injects the router via `experimental.chat.system.transform` — the same opt-out
+rules apply.
+
+Working inside a clone of this repo needs no config at all: OpenCode
+auto-discovers `.opencode/plugins/*.js`, so the adapter loads on its own.
+Elsewhere, add the published package to `plugin` as above.
 
 All three install the same five skills. The session-start hook is registered for Claude Code and Codex, which read the shared `hooks/hooks.json`.
 

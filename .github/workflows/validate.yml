@@ -123,6 +123,9 @@ jobs:
       - name: Run test suite
         run: npm test
 
+      - name: Check the OpenCode adapter is reachable
+        run: npm run check-opencode
+
   validate-plugin:
     name: Validate Plugin Manifests
     runs-on: ubuntu-latest

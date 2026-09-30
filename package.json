@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./.opencode/plugins/codebase-health.mjs",
+  "main": "./.opencode/plugins/codebase-health.js",
   "engines": {
     "node": ">=18"
   },
@@ -20,7 +20,7 @@
     ".claude-plugin/",
     ".codex-plugin/",
     ".agents/",
-    ".opencode/plugins/codebase-health.mjs",
+    ".opencode/plugins/codebase-health.js",
     "assets/",
     "hooks/",
     "skills/",
@@ -32,6 +32,7 @@
     "build": "node scripts/build.mjs",
     "test": "node --test",
     "validate": "node scripts/build.mjs --validate-only",
+    "check-opencode": "node scripts/check-opencode.mjs",
     "sync-refs": "bash _shared/scripts/sync-references.sh",
     "check-versions": "node _shared/scripts/bump-version.mjs --check",
     "bump": "node _shared/scripts/bump-version.mjs"
