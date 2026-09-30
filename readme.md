@@ -145,7 +145,11 @@ Claude Code namespaces plugin skills, so the installed commands are:
 | `/codebase-health:folder-architecture`   | Enforce clean folder organization before file operations         |
 | `/codebase-health:code-design`           | Review and enforce clean function-level design inside files      |
 
-Codex exposes the router as `$codebase-health`. Other hosts use their own skill-invocation syntax; the skill directories are plain `SKILL.md` files either way.
+Codex exposes the router as `$codebase-health`. OpenCode has no namespaced
+skill commands, so the plugin registers a single `/codebase-health` command
+whose body is the routing table itself — the same text the bootstrap injects.
+Other hosts use their own skill-invocation syntax; the skill directories are
+plain `SKILL.md` files either way.
 
 ### Manual Install
 

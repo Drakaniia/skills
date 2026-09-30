@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { mkdtempSync, writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { stripFrontmatter } from "../hooks/session-start.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PLUGIN = join(ROOT, ".opencode", "plugins", "codebase-health.mjs");
@@ -64,6 +65,37 @@ test("the injected router has no YAML frontmatter", async () => {
   await plugin["experimental.chat.system.transform"]({}, output);
   assert.ok(!output.system[0].startsWith("---"));
   assert.ok(!output.system[0].includes("name: codebase-health"));
+});
+
+test("registers /codebase-health whose template is the router itself", async () => {
+  const plugin = await loadPlugin();
+  const config = {};
+  await plugin.config(config);
+  const cmd = config.command["codebase-health"];
+  assert.ok(cmd, "command not registered");
+  assert.ok(cmd.description.length > 0);
+  // One source of truth: the command body is the router, not a copy of it.
+  const routerBody = stripFrontmatter(
+    readFileSync(join(ROOT, "skills", "codebase-health", "SKILL.md"), "utf8"),
+  );
+  assert.equal(cmd.template, routerBody);
+  for (const s of ["audit-codebase", "folder-architecture", "code-design", "implement-folder-architecture"]) {
+    assert.ok(cmd.template.includes(s), `routing table missing ${s}`);
+  }
+});
+
+test("preserves user-defined commands", async () => {
+  const plugin = await loadPlugin();
+  const config = { command: { "my-own": { description: "mine", template: "hi" } } };
+  await plugin.config(config);
+  assert.equal(Object.keys(config.command).length, 2);
+  assert.ok(config.command["my-own"]);
+});
+
+test("CODEBASE_HEALTH=off registers no command either", async () => {
+  const plugin = await loadPlugin({ CODEBASE_HEALTH: "off" });
+  assert.deepEqual(plugin, {});
+  assert.equal(plugin.config, undefined);
 });
 
 test("CODEBASE_HEALTH=off yields no hooks at all", async () => {

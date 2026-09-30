@@ -33,6 +33,16 @@ export default async () => {
       config.skills = config.skills || {};
       config.skills.paths = config.skills.paths || [];
       if (!config.skills.paths.includes(SKILLS)) config.skills.paths.push(SKILLS);
+
+      // /codebase-health — the discovery card. The template IS the router body,
+      // so there is no second copy of the routing table to drift. Per-skill
+      // slash commands are deliberately absent: the skills are already
+      // invocable, and re-adding commands/ is what decision 12 removed.
+      config.command = config.command || {};
+      config.command["codebase-health"] = {
+        description: "Show the codebase-health skill routing table",
+        template: router,
+      };
     },
 
     "experimental.chat.system.transform": async (_input, output) => {
