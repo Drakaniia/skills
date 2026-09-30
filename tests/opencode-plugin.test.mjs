@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -67,21 +67,43 @@ test("the injected router has no YAML frontmatter", async () => {
   assert.ok(!output.system[0].includes("name: codebase-health"));
 });
 
-test("registers /codebase-health whose template is the router itself", async () => {
+test("/codebase-health is a reference card covering every skill", async () => {
   const plugin = await loadPlugin();
   const config = {};
   await plugin.config(config);
   const cmd = config.command["codebase-health"];
   assert.ok(cmd, "command not registered");
-  assert.ok(cmd.description.length > 0);
-  // One source of truth: the command body is the router, not a copy of it.
-  const routerBody = stripFrontmatter(
+  // Informational: says it changes nothing, so the model does not go audit.
+  assert.match(cmd.description, /reference only/i);
+  assert.match(cmd.description, /changes no files/i);
+  // Every skill is listed with its own description, read from frontmatter.
+  const dirs = readdirSync(join(ROOT, "skills"), { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+  assert.equal(dirs.length, 5);
+  for (const s of dirs) {
+    assert.ok(cmd.template.includes(`\`${s}\``), `card missing ${s}`);
+  }
+  // Descriptions come from the skills, not a hand-kept copy.
+  const audit = readFileSync(join(ROOT, "skills", "audit-codebase", "SKILL.md"), "utf8");
+  const auditDesc = /^description:\s*(.+)$/m.exec(audit)[1].trim();
+  assert.ok(cmd.template.includes(auditDesc), "card must carry the real description");
+  // The health loop closes the card.
+  assert.match(cmd.template, /audit → fix → prevent/);
+});
+
+test("the injected router stays lean and differs from the card", async () => {
+  const plugin = await loadPlugin();
+  const config = {};
+  await plugin.config(config);
+  const router = stripFrontmatter(
     readFileSync(join(ROOT, "skills", "codebase-health", "SKILL.md"), "utf8"),
   );
-  assert.equal(cmd.template, routerBody);
-  for (const s of ["audit-codebase", "folder-architecture", "code-design", "implement-folder-architecture"]) {
-    assert.ok(cmd.template.includes(s), `routing table missing ${s}`);
-  }
+  const output = { system: [] };
+  await plugin["experimental.chat.system.transform"]({}, output);
+  // Injected every turn, so it must not carry the full descriptions.
+  assert.ok(output.system[0].length < 1200, `router too heavy: ${output.system[0].length} chars`);
+  assert.notEqual(config.command["codebase-health"].template, output.system[0]);
 });
 
 test("preserves user-defined commands", async () => {

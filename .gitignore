@@ -5,10 +5,11 @@
 node_modules/
 
 # OpenCode plugins — local dev scratch, not shipped.
-# codebase-health.mjs IS the published OpenCode adapter, so it is re-included
-# below; the ignore only covers the dev-only plugins in this directory.
-.opencode/plugins/*
-!.opencode/plugins/codebase-health.mjs
+# codebase-health.js IS the published OpenCode adapter, so it is re-included.
+# The pattern must be the bare filename, not plugins/*: git never descends into
+# an excluded directory, so a negation below it cannot re-include anything.
+.opencode/plugins/*.js
+!.opencode/plugins/codebase-health.js
 .opencode/package.json
 .opencode/package-lock.json
 

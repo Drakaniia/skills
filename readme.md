@@ -36,6 +36,10 @@ the bundled `skills/` directory, registers the `/codebase-health` command, and
 injects the router via `experimental.chat.system.transform` — the same opt-out
 rules apply.
 
+`/codebase-health` is a reference card: it lists every skill with its own
+description and the condition it fires under, and does nothing else. It runs no
+audit and changes no files.
+
 Working inside a clone of this repo needs no config at all: OpenCode
 auto-discovers `.opencode/plugins/*.js`, so the adapter loads on its own.
 Elsewhere, add the published package to `plugin` as above.

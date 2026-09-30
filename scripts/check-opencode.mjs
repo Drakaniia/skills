@@ -48,6 +48,13 @@ check(
   "registers the bundled skills directory",
 );
 
+// 5. The adapter must be visible to git. A `.opencode/plugins/*` ignore rule
+//    silently beats a negation below it — git will not descend into an excluded
+//    directory — so the adapter once went untracked while still publishing
+//    fine from a local build. That is invisible until someone clones.
+const ignored = spawnSync("git", ["check-ignore", "-q", PLUGIN], { cwd: ROOT });
+check(ignored.status !== 0, "adapter is not gitignored (it must ship)");
+
 if (fail.length) {
   console.error(`\n${fail.length} check(s) failed`);
   process.exit(1);
