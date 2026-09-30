@@ -26,7 +26,7 @@ Add the package to the `plugin` array in `opencode.json`:
 
 ```json
 {
-  "plugin": ["@drakaniia/codebase-health"]
+  "plugin": ["@qwenzy/codebase-health"]
 }
 ```
 

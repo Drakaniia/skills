@@ -135,14 +135,13 @@ git push origin main
 git push origin v2.0.0
 ```
 
-Pushing the `v*` tag triggers `.github/workflows/release.yml`, which runs the checks again and publishes to npm under `@drakaniia/codebase-health` with OIDC trusted publishing plus provenance. No `NPM_TOKEN` is involved. The workflow then creates the GitHub release from the CHANGELOG section for that version.
+Pushing the `v*` tag triggers `.github/workflows/release.yml`, which runs the checks again and publishes to npm under `@qwenzy/codebase-health` with OIDC trusted publishing plus provenance. No `NPM_TOKEN` is involved. The workflow then creates the GitHub release from the CHANGELOG section for that version.
 
 ### 3. First-time owner prerequisites
 
 **Not code — owner actions in npm's web UI, and not automatable from the repo.** Before the first publish:
 
-- The **`@drakaniia` scope must exist.** Create it by logging in as `drakaniia` and publishing once, or via the npm web UI. npm returns 404 for an uncreated scope, which is expected until then.
-- **Trusted publishing must be registered** for this repository in npm's web UI, pointing at the release workflow. Until that is done, the workflow's publish step will fail even with correct permissions in the YAML.
+- **Trusted publishing must be registered** for this repository in npm's web UI, pointing at the release workflow. Until that is done, the workflow's publish step will fail even with correct permissions in the YAML. The package is published from the `@qwenzy` scope; the GitHub org is `Drakaniia`, and the two names differing is expected.
 
 ## Questions?
 
