@@ -4,8 +4,13 @@
 # Node.js
 node_modules/
 
-# OpenCode plugins
-.opencode/plugins/
+# OpenCode plugins — local dev scratch, not shipped.
+# codebase-health.mjs IS the published OpenCode adapter, so it is re-included
+# below; the ignore only covers the dev-only plugins in this directory.
+.opencode/plugins/*
+!.opencode/plugins/codebase-health.mjs
+.opencode/package.json
+.opencode/package-lock.json
 
 # OpenCode session data
 .omo/

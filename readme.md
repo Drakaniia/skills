@@ -30,6 +30,11 @@ Add the package to the `plugin` array in `opencode.json`:
 }
 ```
 
+OpenCode has no `SessionStart` hook, so the package ships a small OpenCode
+adapter at `.opencode/plugins/codebase-health.mjs` (its `main`). It registers
+the bundled `skills/` directory and injects the router via
+`experimental.chat.system.transform` — the same opt-out rules apply.
+
 All three install the same five skills. The session-start hook is registered for Claude Code and Codex, which read the shared `hooks/hooks.json`.
 
 > **Migrating from `Drakaniia/skills`?** This repo was renamed to `Drakaniia/codebase-health`. GitHub keeps a permanent redirect from the old path, so `npx skills add Drakaniia/skills` and any existing clone URLs still resolve — nothing to do. There is no npm shim to worry about: the old package name was `private: true` and was never published. To move to the plugin, install it as above and remove the old skill directories.

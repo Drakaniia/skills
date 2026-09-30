@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./hooks/session-start.mjs",
+  "main": "./.opencode/plugins/codebase-health.mjs",
   "engines": {
     "node": ">=18"
   },
@@ -20,6 +20,7 @@
     ".claude-plugin/",
     ".codex-plugin/",
     ".agents/",
+    ".opencode/plugins/codebase-health.mjs",
     "assets/",
     "hooks/",
     "skills/",
