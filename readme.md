@@ -71,7 +71,7 @@ The fifth, **codebase-health**, is the router that sits on top of that loop and 
 
 ## Session-Start Bootstrap
 
-Installing the plugin registers a `SessionStart` hook (`hooks/session-start.mjs`, zero npm dependencies). On startup, resume, clear, and after a compaction, it reads `skills/codebase-health/SKILL.md` and injects it as session context.
+Installing the plugin registers a `SessionStart` hook (`hooks/session-start.mjs`, zero npm dependencies). On startup, resume, clear, and after a compaction, it reads `skills/codebase-health/SKILL.md` and injects it as session context. It needs **Node.js >= 18** on the host.
 
 The effect: the routing table is already in the model's context before you say anything, so the right skill tends to get picked without a round trip. The hook reads the router at runtime rather than embedding a copy, so editing `SKILL.md` is the only place the routing text lives.
 
@@ -179,59 +179,6 @@ For per-agent permissions, configure in `opencode.json`:
 ```
 
 Each skill follows the [Agent Skills open standard](https://openagentskills.dev) — one `SKILL.md` per directory, YAML frontmatter with `name` and `description`, progressive disclosure loading.
-
-## Repository Structure
-
-```
-codebase-health/
-├── .claude-plugin/                      # Claude manifest + self-marketplace
-├── .codex-plugin/                       # Codex manifest
-├── .agents/plugins/marketplace.json     # Codex marketplace entry
-├── hooks/                               # SessionStart hook (shared by Claude + Codex)
-├── skills/
-│   ├── codebase-health/                 # Router — injected at session start
-│   ├── audit-codebase/                  # Scan → report
-│   ├── implement-folder-architecture/   # Report → execution
-│   ├── folder-architecture/             # Prevention (file ops)
-│   └── code-design/                     # Prevention (function level)
-├── _shared/references/                  # Canonical shared references
-├── scripts/                             # Build orchestration
-├── tests/                               # node:test hook tests
-├── .github/workflows/                   # CI validation + release
-├── assets/logo.png
-├── package.json                         # Published as @drakaniia/codebase-health
-├── CONTRIBUTING.md
-└── CHANGELOG.md
-```
-
-Each skill follows the OAS progressive disclosure pattern:
-
-```
-<skill>/
-├── SKILL.md              # Loaded on activation (<500 lines)
-├── scripts/              # Executable utilities (loaded on demand)
-├── references/           # Detailed reference files (generated, loaded on demand)
-├── agents/               # Platform agent configs
-└── assets/               # Templates, resources (loaded on demand)
-```
-
-> **Note:** `skills/*/references/` is build output. The shared copies of `ORGANIZATION-PATTERNS.md` and `SPLITTING-GUIDE.md` are generated from `_shared/references/` and are not committed, so a fresh clone has empty `references/` directories until you run `npm run build`. Hosts resolve a reference miss gracefully — progressive disclosure simply finds no extra file — so skills still work, just without the deep-dive appendices until you build. See [CONTRIBUTING.md](CONTRIBUTING.md#shared-references-are-generated).
-
-## Requirements
-
-- **Node.js >= 18** — a real runtime requirement, for the session-start hook. The hook itself has zero npm dependencies.
-- An AI coding agent that supports the Agent Skills spec (`SKILL.md` discovery): Claude Code, Codex, or OpenCode for the plugin path; any spec-compliant agent for the manual path.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines, the release procedure, and the new-skill checklist. Quick overview:
-
-1. Follow the [Agent Skills Specification](https://openagentskills.dev/docs/specification)
-2. Keep `SKILL.md` under 500 lines
-3. Edit shared references in `_shared/references/`, then run `npm run build`
-4. Validate: `npm run validate` (on Windows, `npx skills-ref validate skills/<skill-name>` — the script relies on shell glob expansion)
-5. Never hand-edit a version — `npm run bump` is the only legal way
-6. Submit a PR
 
 ## License
 
