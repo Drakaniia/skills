@@ -1,8 +1,7 @@
 {
-  "name": "skills",
-  "private": true,
-  "version": "1.0.0",
-  "description": "Language-agnostic agent skills for keeping codebases healthy — audits structure, executes fixes, prevents decay, and ensures well-designed code.",
+  "name": "@drakaniia/codebase-health",
+  "version": "2.0.0",
+  "description": "Language-agnostic agent skills for keeping codebases healthy — audit structure, execute refactoring, prevent decay, and enforce clean code design.",
   "keywords": [
     "agent-skills",
     "codebase-health",
@@ -11,16 +10,39 @@
     "code-design",
     "refactoring"
   ],
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Drakaniia/skills.git"
+  "license": "MIT",
+  "type": "module",
+  "main": "./hooks/session-start.mjs",
+  "engines": {
+    "node": ">=18"
   },
+  "files": [
+    ".claude-plugin/",
+    ".codex-plugin/",
+    ".agents/",
+    "assets/",
+    "hooks/",
+    "skills/",
+    "_shared/references/",
+    "LICENSE",
+    "readme.md"
+  ],
   "scripts": {
-    "validate": "skills-ref validate ./skills/*",
-    "sync-refs": "bash _shared/scripts/sync-references.sh"
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "validate": "node scripts/build.mjs --validate-only",
+    "sync-refs": "bash _shared/scripts/sync-references.sh",
+    "check-versions": "node _shared/scripts/bump-version.mjs --check",
+    "bump": "node _shared/scripts/bump-version.mjs"
   },
   "devDependencies": {
-    "skills-ref": "^1.0.0"
+    "skills-ref": "^0.1.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Drakaniia/codebase-health.git"
   }
 }

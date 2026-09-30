@@ -1,0 +1,16 @@
+{
+  "name": "codebase-health",
+  "description": "Codebase health agent skills — audit, fix, prevent decay, design clean code.",
+  "owner": { "name": "Drakaniia", "url": "https://github.com/Drakaniia" },
+  "plugins": [
+    {
+      "name": "codebase-health",
+      "description": "Language-agnostic agent skills for keeping codebases healthy.",
+      "source": "./",
+      "version": "2.0.0",
+      "category": "productivity",
+      "license": "MIT",
+      "author": { "name": "Drakaniia", "url": "https://github.com/Drakaniia" }
+    }
+  ]
+}

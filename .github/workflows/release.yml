@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Publish to npm and GitHub
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # gh release create
+      id-token: write # npm OIDC trusted publishing (no NPM_TOKEN)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # registry-url is intentionally omitted: setup-node would write an
+      # .npmrc that requires NODE_AUTH_TOKEN, which trusted publishing does
+      # not use. npm defaults to registry.npmjs.org.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # OIDC trusted publishing needs npm >= 11.5.1; the Node 20 image ships an
+      # older npm.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check manifest versions agree
+        run: npm run check-versions
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate skills
+        run: npm run validate
+
+      - name: Extract release notes from CHANGELOG
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v ver="$version" '
+            !found && index($0, "## [" ver "]") == 1 { found = 1; next }
+            found && index($0, "## [") == 1 { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::error::No '## [$version]' section in CHANGELOG.md — refusing to publish an empty release body."
+            exit 1
+          fi
+          cat release-notes.md
+
+      - name: Publish to npm
+        run: npm publish --provenance
+
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --notes-file release-notes.md --title "$GITHUB_REF_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

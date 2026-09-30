@@ -1,0 +1,18 @@
+{
+  "name": "codebase-health",
+  "version": "2.0.0",
+  "description": "Language-agnostic agent skills for keeping codebases healthy.",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Codebase Health",
+    "shortDescription": "Audit, fix and prevent codebase decay",
+    "longDescription": "Five language-agnostic skills that audit structural health, execute refactors, enforce folder placement on every edit, and keep function-level design clean.",
+    "category": "Productivity",
+    "capabilities": ["Instructions", "Lifecycle hooks"],
+    "defaultPrompt": "Use $codebase-health to find the right skill for this task.",
+    "brandColor": "#111111",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png"
+  }
+}

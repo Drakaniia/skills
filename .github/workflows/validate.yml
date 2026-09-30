@@ -5,11 +5,29 @@ on:
     paths:
       - "skills/**"
       - "_shared/**"
+      - "hooks/**"
+      - ".claude-plugin/**"
+      - ".codex-plugin/**"
+      - ".agents/**"
+      - "assets/**"
+      - "scripts/**"
+      - "tests/**"
+      - "package.json"
+      - ".github/workflows/**"
   push:
     branches: [main]
     paths:
       - "skills/**"
       - "_shared/**"
+      - "hooks/**"
+      - ".claude-plugin/**"
+      - ".codex-plugin/**"
+      - ".agents/**"
+      - "assets/**"
+      - "scripts/**"
+      - "tests/**"
+      - "package.json"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
@@ -42,7 +60,7 @@ jobs:
 
       - name: Verify required directories exist
         run: |
-          for skill in audit-codebase folder-architecture code-design implement-folder-architecture; do
+          for skill in audit-codebase codebase-health code-design folder-architecture implement-folder-architecture; do
             dir="skills/$skill"
             if [ ! -f "$dir/SKILL.md" ]; then
               echo "❌ $dir/SKILL.md is missing"
@@ -61,33 +79,73 @@ jobs:
             fi
           done
 
-  check-cross-references:
-    name: Check Shared Reference Sync
+  # Replaces the old check-cross-references job. The per-skill reference copies
+  # are generated artifacts (gitignored, see spec 5.11), so they no longer exist
+  # in a fresh checkout and diffing them against the canonical files is a
+  # guaranteed false failure. sync-references.sh --check now owns that concern.
+  check-generated-clean:
+    name: Check Generated References Are In Sync
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compare shared references with skill copies
+      - name: Rebuild generated references and fail on drift
+        run: bash _shared/scripts/sync-references.sh --check
+
+      - name: Verify working tree is unchanged
+        run: git diff --exit-code
+
+  check-versions:
+    name: Check Version Consistency Across Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check manifests against package.json version
+        run: npm run check-versions
+
+  test-hooks:
+    name: Test Hooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run test suite
+        run: npm test
+
+  validate-plugin:
+    name: Validate Plugin Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code CLI
         run: |
-          errors=0
-          for ref in ORGANIZATION-PATTERNS.md SPLITTING-GUIDE.md; do
-            canonical="_shared/references/$ref"
-            if [ ! -f "$canonical" ]; then
-              echo "⚠️  Canonical $canonical not found, skipping sync check"
-              continue
-            fi
-            for skill in audit-codebase folder-architecture implement-folder-architecture; do
-              skill_copy="skills/$skill/references/$ref"
-              # Skill copies are byte-identical replicas of the canonical file
-              # (see _shared/scripts/sync-references.sh). A full-file diff catches
-              # any drift, including the duplicated-block corruption that a
-              # marker-based comparison used to miss.
-              if ! diff "$canonical" "$skill_copy" > /dev/null 2>&1; then
-                echo "❌ $skill_copy differs from canonical $canonical"
-                errors=$((errors + 1))
-              else
-                echo "✅ $skill_copy matches canonical"
-              fi
-            done
-          done
-          exit $errors
+          if npm install -g @anthropic-ai/claude-code; then
+            echo "Claude Code CLI installed"
+          else
+            echo "warning: could not install @anthropic-ai/claude-code" >&2
+          fi
+
+      - name: Validate plugin
+        run: |
+          if ! command -v claude > /dev/null 2>&1; then
+            echo "::warning::Claude Code CLI unavailable on this runner — skipping 'claude plugin validate .'"
+            exit 0
+          fi
+          claude plugin validate .

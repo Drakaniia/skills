@@ -1,7 +1,7 @@
 ---
 name: implement-folder-architecture
 description: Execute a large-scale folder architecture refactor based on an audit report or user-defined architecture. Moves files into correct locations, splits oversized folders, refactors imports, updates barrel files, and verifies builds after each phase. Use after audit-codebase has generated its structural report, or when a systematic folder reorganization is needed.
-license: Apache-2.0
+license: MIT
 compatibility: OpenCode >= 1.0, Claude Code >= 2.0, Codex CLI, Cursor, Gemini CLI
 allowed-tools:
   - read
@@ -12,7 +12,7 @@ allowed-tools:
   - bash
 metadata:
   language: language-agnostic
-  version: "1.0.0"
+  version: "2.0.0"
   tags: folder-architecture, code-organization, file-structure, refactoring, migration, code-migration, structural-refactor
 ---
 

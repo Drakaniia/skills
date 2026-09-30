@@ -1,7 +1,7 @@
 ---
 name: code-design
 description: Use when writing or reviewing functions that are deeply nested, do too many things, have unclear side effects, or are hard to follow linearly. Also when an agent produces code with high cognitive load — nested if-else pyramids, functions mixing validation+business logic+IO, mutable state leaks, or control flow that jumps around. Complements folder-architecture (file/dir level) with function-level design principles.
-license: Apache-2.0
+license: MIT
 compatibility: OpenCode >= 1.0, Claude Code >= 2.0, Codex CLI, Cursor, Gemini CLI
 allowed-tools:
   - read
@@ -12,7 +12,7 @@ allowed-tools:
   - bash
 metadata:
   language: language-agnostic
-  version: "1.0.0"
+  version: "2.0.0"
   tags: code-design, code-quality, clean-code, function-design, cognitive-load, single-responsibility, pure-functions, side-effects, guard-clauses
 ---
 
