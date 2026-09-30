@@ -1,5 +1,8 @@
 # Codebase Health
 
+[![npm](https://img.shields.io/npm/v/@qwenzy/codebase-health?label=npm)](https://www.npmjs.com/package/@qwenzy/codebase-health)
+[![license](https://img.shields.io/npm/l/@qwenzy/codebase-health)](./LICENSE)
+
 > Language-agnostic agent skills for keeping codebases healthy — one audits structure, another executes fixes, a third prevents decay, a fourth ensures the code _inside_ files is well-designed, and a fifth routes between them.
 
 Agent skills are reusable instructions that coding agents (Claude Code, Codex, OpenCode, and others) discover and load on demand. This repo is packaged as a plugin built around a single philosophy: **codebase health is a continuous practice, not a one-time audit.**
@@ -26,9 +29,14 @@ Add the package to the `plugin` array in `opencode.json`:
 
 ```json
 {
-  "plugin": ["@qwenzy/codebase-health"]
+  "plugin": ["@qwenzy/codebase-health@latest"]
 }
 ```
+
+OpenCode installs and caches npm plugins with Bun at startup, so there is no
+`npm install` step — and adding the package to a `package.json` is *not*
+enough, the `plugin` entry is what loads it. Pin an exact version
+(`@qwenzy/codebase-health@2.0.0`) if you would rather not track `latest`.
 
 OpenCode has no `SessionStart` hook, so the package ships a small OpenCode
 adapter at `.opencode/plugins/codebase-health.js` (its `main`). It registers
@@ -43,6 +51,10 @@ audit and changes no files.
 Working inside a clone of this repo needs no config at all: OpenCode
 auto-discovers `.opencode/plugins/*.js`, so the adapter loads on its own.
 Elsewhere, add the published package to `plugin` as above.
+
+Prefer npm? The package is public, so `npm view @qwenzy/codebase-health` and
+`npm pack @qwenzy/codebase-health@latest` both work for inspection — installing
+it that way still does not register the plugin without the `plugin` entry.
 
 All three install the same five skills. The session-start hook is registered for Claude Code and Codex, which read the shared `hooks/hooks.json`.
 
