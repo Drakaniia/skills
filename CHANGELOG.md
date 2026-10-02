@@ -4,18 +4,20 @@
 
 ## [2.1.1] — 2026-10-02
 
-Fixes the tarball published by 2.1.0, which shipped with the six generated per-skill
-reference files missing. No skill content changed.
+The first version published through the tag pipeline rather than from a local
+`npm publish`. No skill content changed.
 
 ### Fixed
 
-- **The published package was missing six files.** `skills/{audit-codebase,folder-architecture,implement-folder-architecture}/references/{ORGANIZATION-PATTERNS,SPLITTING-GUIDE}.md` are gitignored build output, and the release workflow ran `npm run validate` — which cannot generate them — but never the sync. Every published version up to and including 2.1.0 shipped three skills with half their `references/` directory absent. `npm run prepack` now syncs before packing, and npm runs `prepack` on every `npm publish` and `npm pack`, so no path can produce an incomplete tarball again. **2.1.0 cannot be repaired** — npm does not allow a version to be republished.
-- **A missing `bash` no longer skips silently.** `npm run build` treated an absent `bash` as a skip notice, which on a local `npm publish` would have shipped the same incomplete tarball. It is now fatal, with a message naming the tool and the fix.
+- **The tag pipeline could not publish at all.** The `v2.1.0` release run failed with `ENEEDAUTH`, so 2.1.0 never reached npm despite the tag existing — `latest` on the registry was still 2.0.0's successor from a local publish. Nothing in the repo can fix this: a trusted publisher must be registered for this repository on npmjs.com. `RELEASING.md` documents the exact values.
+- **The release workflow would have shipped an incomplete tarball.** `skills/{audit-codebase,folder-architecture,implement-folder-architecture}/references/{ORGANIZATION-PATTERNS,SPLITTING-GUIDE}.md` are gitignored build output, and the workflow ran `npm run validate` — which by design cannot generate them — but never the sync. Six files would have been missing, leaving three skills with half their `references/` directory absent. `npm run prepack` now syncs before packing, and npm runs `prepack` on every `npm publish` and `npm pack`, so no path can produce an incomplete tarball.
+- **A missing `bash` no longer skips silently.** `npm run build` treated an absent `bash` as a skip notice, which on a local `npm publish` would have shipped that same incomplete tarball. It is now fatal, with a message naming the tool and the fix.
+- **`validate.yml` tested a different npm than the release path.** Its `test-hooks` job ran the npm bundled with Node 20 while `release.yml` installs `npm@latest`, so a release-breaking test could pass CI and fail only in the release run. The two now agree, on Node 24 — `npm@latest` requires `^22.22.2 || ^24.15.0 || >=26` and would `EBADENGINE` on 20.
 
 ### Added
 
-- **`tests/pack-contents.test.mjs`** — runs `npm pack --dry-run` and asserts the six generated references are in the tarball and byte-size-match their canonical sources. Runs on every PR via the existing `test-hooks` job, so this regression class is caught before a tag rather than after a publish.
-- **Tag/version guard in the release workflow** — pushing `v2.2.0` while `package.json` still says `2.1.0` failed at the registry with `E403 Cannot publish over previously published version`, which reads as a permissions fault rather than a forgotten bump. The workflow now compares the tag against `package.json` and fails with both values named.
+- **`tests/pack-contents.test.mjs`** — runs `npm pack --dry-run` and asserts the six generated references are in the tarball and byte-size-match their canonical sources. Runs on every PR via the existing `test-hooks` job, so this regression class is caught before a tag rather than after a publish. Tolerant of all three `npm pack --json` output shapes, since npm changes them between majors and CI tracks `npm@latest`.
+- **Tag/version guard in the release workflow** — pushing `v2.2.0` while `package.json` still says `2.1.0` would have failed at the registry with `E403 Cannot publish over previously published version`, which reads as a permissions fault rather than a forgotten bump. The workflow now compares the tag against `package.json` and fails with both values named.
 - **`RELEASING.md`** — the release process, both publish paths, the pre-publish checklist, and troubleshooting, promoted out of `CONTRIBUTING.md` and into the repo. It was previously untracked and existed only on one machine.
 
 ### Changed
