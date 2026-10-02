@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [2.1.0] — 2026-10-02
+
+### Added
+
+- **400-line standing rule in the router** — `skills/codebase-health/SKILL.md` now carries the file-size check that previously only existed as prose inside `folder-architecture`. Because the router is what the OpenCode plugin, the Claude Code hook, and the Codex hook all inject as session context, the rule now applies on every host and every session instead of only when `folder-architecture` happens to trigger. Over 350 lines and pushing toward 400 → warn and propose a split; over 400 → do not add unprompted. The "do not split as a drive-by" clause is deliberate: the threshold is a nudge to route into `folder-architecture` and `code-design`, not an invitation to refactor unrelated code mid-task.
+
 ## [2.0.0] — 2026-09-30
 
 First release as an installable plugin. Packaging, distribution, and discovery — the four existing skills are unchanged in content.

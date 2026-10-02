@@ -13,7 +13,7 @@ allowed-tools:
   - ask_user
 metadata:
   language: language-agnostic
-  version: "2.0.0"
+  version: "2.1.0"
   tags: folder-architecture, code-organization, file-structure, best-practices, architecture-enforcement
 ---
 

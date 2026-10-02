@@ -1,7 +1,7 @@
 {
   "name": "codebase-health",
   "displayName": "Codebase Health",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Language-agnostic agent skills for keeping codebases healthy — audit structure, execute refactoring, prevent decay, and enforce clean code design.",
   "author": { "name": "Drakaniia", "url": "https://github.com/Drakaniia" },
   "homepage": "https://github.com/Drakaniia/codebase-health#readme",
