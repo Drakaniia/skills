@@ -34,7 +34,20 @@ function packFileList() {
   } catch {
     assert.fail(`npm pack --json did not emit clean JSON on stdout:\n${r.stdout}`);
   }
-  return new Map(parsed[0].files.map((f) => [f.path, f.size]));
+  // `npm pack --json` has shipped three shapes: npm 11 returns an array,
+  // npm 12 returns an object keyed by package name. CI installs npm@latest, so
+  // find the tarball entry by its file list instead of pinning a shape.
+  const candidates = Array.isArray(parsed)
+    ? parsed
+    : parsed && Array.isArray(parsed.files)
+      ? [parsed]
+      : Object.values(parsed ?? {});
+  const info = candidates.find((e) => e && Array.isArray(e.files));
+  assert.ok(
+    info,
+    `npm pack --json reported no file list:\n${r.stdout.slice(0, 300)}`,
+  );
+  return new Map(info.files.map((f) => [f.path, f.size]));
 }
 
 test("the tarball carries every generated per-skill reference", () => {
