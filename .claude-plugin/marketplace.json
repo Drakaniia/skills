@@ -8,7 +8,7 @@
       "name": "codebase-health",
       "description": "Language-agnostic agent skills for keeping codebases healthy.",
       "source": "./",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "category": "productivity",
       "license": "MIT",
       "author": { "name": "Drakaniia", "url": "https://github.com/Drakaniia" }

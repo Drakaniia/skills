@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+## [2.1.1] — 2026-10-02
+
+Fixes the tarball published by 2.1.0, which shipped with the six generated per-skill
+reference files missing. No skill content changed.
+
+### Fixed
+
+- **The published package was missing six files.** `skills/{audit-codebase,folder-architecture,implement-folder-architecture}/references/{ORGANIZATION-PATTERNS,SPLITTING-GUIDE}.md` are gitignored build output, and the release workflow ran `npm run validate` — which cannot generate them — but never the sync. Every published version up to and including 2.1.0 shipped three skills with half their `references/` directory absent. `npm run prepack` now syncs before packing, and npm runs `prepack` on every `npm publish` and `npm pack`, so no path can produce an incomplete tarball again. **2.1.0 cannot be repaired** — npm does not allow a version to be republished.
+- **A missing `bash` no longer skips silently.** `npm run build` treated an absent `bash` as a skip notice, which on a local `npm publish` would have shipped the same incomplete tarball. It is now fatal, with a message naming the tool and the fix.
+
+### Added
+
+- **`tests/pack-contents.test.mjs`** — runs `npm pack --dry-run` and asserts the six generated references are in the tarball and byte-size-match their canonical sources. Runs on every PR via the existing `test-hooks` job, so this regression class is caught before a tag rather than after a publish.
+- **Tag/version guard in the release workflow** — pushing `v2.2.0` while `package.json` still says `2.1.0` failed at the registry with `E403 Cannot publish over previously published version`, which reads as a permissions fault rather than a forgotten bump. The workflow now compares the tag against `package.json` and fails with both values named.
+- **`RELEASING.md`** — the release process, both publish paths, the pre-publish checklist, and troubleshooting, promoted out of `CONTRIBUTING.md` and into the repo. It was previously untracked and existed only on one machine.
+
+### Changed
+
+- **Release documentation consolidated.** `CONTRIBUTING.md` now links to `RELEASING.md` instead of duplicating the release process inline; `readme.md` links to both.
+- **Build progress goes to stderr.** `scripts/build.mjs` writes to stderr rather than stdout, so `npm pack --json` emits parseable JSON instead of having its output corrupted by build chatter.
+- **`package-lock.json` regenerated.** It still described the pre-rename package (`@drakaniia/codebase-health@2.0.0`) after commit `435f9ad` moved the scope.
+
 ## [2.1.0] — 2026-10-02
 
 ### Added

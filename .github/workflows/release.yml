@@ -45,6 +45,21 @@ jobs:
       - name: Validate skills
         run: npm run validate
 
+      # Without this, tagging v2.2.0 while package.json still says 2.1.0 fails
+      # at the registry with E403 "cannot publish over a previously published
+      # version", which reads as a permissions problem rather than a forgotten
+      # version bump. The CHANGELOG gate below only catches a missing section.
+      - name: Verify the tag matches package.json
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          pkg_version="$(node -p "require('./package.json').version")"
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $pkg_version."
+            echo "::error::Bump package.json, run 'npm run bump', commit, then re-tag."
+            exit 1
+          fi
+          echo "tag $tag_version matches package.json $pkg_version"
+
       - name: Extract release notes from CHANGELOG
         run: |
           version="${GITHUB_REF_NAME#v}"

@@ -1,6 +1,6 @@
 {
   "name": "codebase-health",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Language-agnostic agent skills for keeping codebases healthy.",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",

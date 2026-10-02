@@ -1,6 +1,6 @@
 {
   "name": "@qwenzy/codebase-health",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Language-agnostic agent skills for keeping codebases healthy — audit structure, execute refactoring, prevent decay, and enforce clean code design.",
   "keywords": [
     "agent-skills",
@@ -30,6 +30,7 @@
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
+    "prepack": "node scripts/build.mjs --sync-only",
     "test": "node --test",
     "validate": "node scripts/build.mjs --validate-only",
     "check-opencode": "node scripts/check-opencode.mjs",

@@ -94,11 +94,12 @@ npm test           # node --test tests/
 | Script                 | What it does                                                       |
 | ---------------------- | ------------------------------------------------------------------ |
 | `npm run build`        | Sync shared references into the skills, then validate              |
+| `npm run prepack`      | Sync only; npm runs this on every `npm publish` and `npm pack`     |
 | `npm run validate`     | OAS frontmatter and structure validation across all skills         |
-| `npm test`             | `node:test` suite for the session-start hook                       |
+| `npm test`             | `node:test` suite for the session-start hook and the packed tarball |
 | `npm run sync-refs`    | Shared-reference sync only                                         |
 | `npm run check-versions` | Fails if any manifest's version disagrees with `package.json`    |
-| `npm run bump`         | The only legal way to change the version — see [Releasing](#releasing) |
+| `npm run bump`         | Propagates `package.json`'s version into every manifest — see [RELEASING.md](RELEASING.md) |
 
 > **On Windows:** `npm run validate` passes `./skills/*` to `skills-ref`, which relies on the shell expanding the glob. `cmd.exe` does not, so it fails with *"Path does not exist"*. Validate per skill there instead: `npx skills-ref validate skills/code-design`.
 
@@ -115,33 +116,21 @@ If the router does not appear, check `CODEBASE_HEALTH` and `~/.config/codebase-h
 
 ## Releasing
 
-### 1. One script owns the version
+See **[RELEASING.md](RELEASING.md)** for the full workflow: versioning, the
+pre-publish checklist, the changelog section the release workflow requires, both
+publish paths, and troubleshooting.
 
-`package.json.version` is the single source of truth. `npm run bump` writes it into every manifest and every `skills/*/SKILL.md` frontmatter.
+Two things to know before your first release:
 
-**Never hand-edit a version in any manifest.** `npm run check-versions` runs in CI and fails on drift, and the release workflow re-runs it, so a hand-edited version produces a rejected tag.
-
-### 2. Cut the release
-
-```bash
-npm run bump            # write package.json's version into every manifest
-npm test                 # hook tests
-npm run check-versions   # manifests agree
-npm run build            # generated refs are current
-git commit -am "release: v2.0.0"
-
-git tag v2.0.0
-git push origin main
-git push origin v2.0.0
-```
-
-Pushing the `v*` tag triggers `.github/workflows/release.yml`, which runs the checks again and publishes to npm under `@qwenzy/codebase-health` with OIDC trusted publishing plus provenance. No `NPM_TOKEN` is involved. The workflow then creates the GitHub release from the CHANGELOG section for that version.
-
-### 3. First-time owner prerequisites
-
-**Not code — owner actions in npm's web UI, and not automatable from the repo.** Before the first publish:
-
-- **Trusted publishing must be registered** for this repository in npm's web UI, pointing at the release workflow. Until that is done, the workflow's publish step will fail even with correct permissions in the YAML. The package is published from the `@qwenzy` scope; the GitHub org is `Drakaniia`, and the two names differing is expected.
+- **Never hand-edit a version in any manifest.** `package.json.version` is the
+  single source of truth; edit it there and run `npm run bump` to propagate.
+  `npm run check-versions` runs in CI and fails on drift.
+- **Trusted publishing must be registered on npmjs.com** for this repository,
+  pointing at `release.yml`. It cannot be set from the repo. Until it is, the tag
+  pipeline fails with `ENEEDAUTH` and releases have to be published locally — see
+  the two-path table in `RELEASING.md`. The package is published from the
+  `@qwenzy` scope while the GitHub org is `Drakaniia`; the two names differing is
+  expected.
 
 ## Questions?
 

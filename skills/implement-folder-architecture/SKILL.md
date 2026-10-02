@@ -12,7 +12,7 @@ allowed-tools:
   - bash
 metadata:
   language: language-agnostic
-  version: "2.1.0"
+  version: "2.1.1"
   tags: folder-architecture, code-organization, file-structure, refactoring, migration, code-migration, structural-refactor
 ---
 

@@ -201,6 +201,11 @@ For per-agent permissions, configure in `opencode.json`:
 
 Each skill follows the [Agent Skills open standard](https://openagentskills.dev) — one `SKILL.md` per directory, YAML frontmatter with `name` and `description`, progressive disclosure loading.
 
+## Contributing and Releasing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and
+[RELEASING.md](RELEASING.md) for the release workflow.
+
 ## License
 
 MIT
