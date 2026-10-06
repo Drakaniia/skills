@@ -1,25 +1,22 @@
 #!/usr/bin/env bash
 # update-imports.sh
 # Update import paths after a file move or rename.
-# Usage: ./update-imports.sh <old-path> <new-path> [target-dir]
+# Usage: ./update-imports.sh <old-path> <new-path> [target-dir] [--apply]
 #
 # Searches for files that import from old-path and shows the replacement.
 # This is a DRY-RUN by default — it shows what would change without modifying files.
 # Pass --apply to actually apply changes.
+#
+# Languages: Python and JS/TS. A language without an import form you can rewrite
+# with one sed expression (Go, Rust, Java, C#, Ruby, PHP) belongs here only after
+# someone adds the rewrite — find-consumers.sh covers the wider set for reading.
 
 set -euo pipefail
 
 OLD_PATH="${1:-}"
 NEW_PATH="${2:-}"
 TARGET_DIR="${3:-.}"
-APPLY=false
-
-# Check for --apply flag
-for arg in "$@"; do
-  if [ "$arg" = "--apply" ]; then
-    APPLY=true
-  fi
-done
+APPLY="${4:-}"
 
 if [ -z "$OLD_PATH" ] || [ -z "$NEW_PATH" ]; then
   echo "Usage: $0 <old-path> <new-path> [target-dir] [--apply]"
@@ -39,62 +36,44 @@ if [ ! -d "$TARGET_DIR" ]; then
   exit 1
 fi
 
+OLD_NAME=$(basename "$OLD_PATH")
+NEW_NAME=$(basename "$NEW_PATH")
+
 echo "=== Import Update: $OLD_PATH → $NEW_PATH ==="
-if [ "$APPLY" = true ]; then
+if [ "$APPLY" = "--apply" ]; then
   echo "Mode: APPLY (will modify files)"
 else
   echo "Mode: DRY-RUN (no changes made, pass --apply to apply)"
 fi
 echo ""
 
-# Extract old and new basenames/dirs for replacement patterns
-OLD_NAME=$(basename "$OLD_PATH")
-NEW_NAME=$(basename "$NEW_PATH")
+# One row per language: label | --include globs | ERE that finds the import line.
+# Same shape as find-consumers.sh, so adding a language is one row.
+while IFS='|' read -r label includes pattern; do
+  matches=$(grep -r -l -E "$pattern" $includes "$TARGET_DIR" 2>/dev/null \
+    | grep -v "*/node_modules/*" \
+    | grep -v "*/.git/*" || true)
+  [ -n "$matches" ] || continue
 
-# Build sed replacement command
-if [ "$APPLY" = true ]; then
-  # Python
-  grep -r -l "from .*${OLD_NAME}\|import.*${OLD_NAME}" \
-    --include="*.py" \
-    "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | while IFS= read -r file; do
-    echo "Updating: $file"
-    sed -i "s|${OLD_PATH}|${NEW_PATH}|g; s|${OLD_NAME}|${NEW_NAME}|g" "$file"
-  done
+  if [ "$APPLY" = "--apply" ]; then
+    echo "$matches" | while IFS= read -r file; do
+      echo "Updating: $file"
+      sed -i "s|${OLD_PATH}|${NEW_PATH}|g; s|${OLD_NAME}|${NEW_NAME}|g" "$file"
+    done
+  else
+    echo "--- $label ---"
+    echo "$matches" | while IFS= read -r file; do echo "  $file"; done
+  fi
+done <<EOF
+Python (.py)|--include=*.py|from .*${OLD_NAME}|import.*${OLD_NAME}
+JS/TS (.js, .jsx, .ts, .tsx)|--include=*.js --include=*.jsx --include=*.ts --include=*.tsx|from ['\"].*${OLD_NAME}['\"]|require\(['\"].*${OLD_NAME}['\"]
+EOF
 
-  # JS/TS
-  grep -r -l "from ['\"].*${OLD_NAME}['\"]\|require(['\"].*${OLD_NAME}['\"]" \
-    --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
-    "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | while IFS= read -r file; do
-    echo "Updating: $file"
-    sed -i "s|${OLD_PATH}|${NEW_PATH}|g; s|${OLD_NAME}|${NEW_NAME}|g" "$file"
-  done
-
-  echo ""
+echo ""
+if [ "$APPLY" = "--apply" ]; then
   echo "✅ Imports updated. Verify with build/tests."
 else
-  echo "Files that would be updated:"
-
-  # Python
-  matches=$(grep -r -l "from .*${OLD_NAME}\|import.*${OLD_NAME}" \
-    --include="*.py" \
-    "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" || true)
-  if [ -n "$matches" ]; then
-    echo "--- Python ---"
-    echo "$matches" | while IFS= read -r f; do echo "  $f"; done
-  fi
-
-  # JS/TS
-  matches=$(grep -r -l "from ['\"].*${OLD_NAME}['\"]\|require(['\"].*${OLD_NAME}['\"]" \
-    --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
-    "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" || true)
-  if [ -n "$matches" ]; then
-    echo "--- JS/TS ---"
-    echo "$matches" | while IFS= read -r f; do echo "  $f"; done
-  fi
-
-  echo ""
   echo "Run with --apply to apply changes."
 fi
 
-echo ""
 echo "=== Import update complete ==="

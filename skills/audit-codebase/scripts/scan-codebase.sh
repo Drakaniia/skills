@@ -1,32 +1,21 @@
 #!/usr/bin/env bash
 # scan-codebase.sh
 # Scans a codebase directory for structural metrics.
-# Usage: ./scan-codebase.sh [target-dir] [--verbose]
+# Usage: ./scan-codebase.sh [target-dir]
 #
 # Outputs:
 #   - File count per directory (sorted by count descending)
-#   - File size distribution
 #   - Listing of empty directories
-#
-# This script replaces inline shell pipelines in the audit-codebase skill
-# with a reusable, reliable implementation.
+#   - Source file count by extension
 
 set -euo pipefail
 
 TARGET_DIR="${1:-.}"
-VERBOSE=false
-
-if [ "${2:-}" = "--verbose" ] || [ "${2:-}" = "-v" ]; then
-  VERBOSE=true
-fi
 
 if [ ! -d "$TARGET_DIR" ]; then
   echo "Error: '$TARGET_DIR' is not a directory" >&2
   exit 1
 fi
-
-# Exclude common non-source directories
-EXCLUDE_DIRS="node_modules|.git|vendor|.venv|__pycache__|build|dist|target|.next|.codegraph"
 
 echo "=== Codebase Scan: $TARGET_DIR ==="
 echo ""

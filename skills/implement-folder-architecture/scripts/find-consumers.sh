@@ -29,68 +29,36 @@ fi
 
 # Extract the module name (last component of path)
 MODULE_NAME=$(basename "$MODULE_PATH")
-# Extract the directory path for relative import patterns
+# Directory part, for the language whose import paths are absolute.
 MODULE_DIR=$(dirname "$MODULE_PATH")
 
-echo "=== Consumers of '$MODULE_PATH' ==="
-echo ""
-
-found=0
-
-# Python imports
-echo "--- Python (.py) ---"
-grep -r -l "from .*${MODULE_NAME}\|import.*${MODULE_NAME}" \
-  --include="*.py" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# JavaScript/TypeScript imports
-echo "--- JS/TS (.js, .ts, .tsx, .jsx) ---"
-grep -r -l "from ['\"].*${MODULE_NAME}['\"]\|require(['\"].*${MODULE_NAME}['\"]" \
-  --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# Go imports
-echo "--- Go (.go) ---"
-grep -r -l "\"${MODULE_PATH}\|\"${MODULE_DIR}.*${MODULE_NAME}" \
-  --include="*.go" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# Rust imports
-echo "--- Rust (.rs) ---"
-grep -r -l "use.*${MODULE_NAME}" \
-  --include="*.rs" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# Java imports
-echo "--- Java (.java) ---"
-grep -r -l "import.*${MODULE_NAME}" \
-  --include="*.java" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# C# imports
-echo "--- C# (.cs) ---"
-grep -r -l "using.*${MODULE_NAME}" \
-  --include="*.cs" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# Ruby imports
-echo "--- Ruby (.rb) ---"
-grep -r -l "require.*${MODULE_NAME}\|require_relative.*${MODULE_NAME}" \
-  --include="*.rb" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
-
-# PHP imports
-echo "--- PHP (.php) ---"
-grep -r -l "use.*${MODULE_NAME}\|require.*${MODULE_NAME}" \
-  --include="*.php" \
-  "$TARGET_DIR" 2>/dev/null | grep -v "*/node_modules/*" | grep -v "*/.git/*" | head -20 || echo "(none)"
-echo ""
+# One row per language: label | --include globs | ERE matched against the line.
+# A file is a consumer if any line of it matches, in any language.
+#
+# python:  from .x.y import y  |  import x.y
+# js/ts:   from 'x/y'  |  require("x/y")
+# go:      the quoted module path itself
+# rust:    use x::y
+# java:    import x.y.Z
+# c#:      using X.Y;
+# ruby:    require 'x/y'  |  require_relative 'y'
+# php:     use X\Y;  |  require 'x/y'
+while IFS='|' read -r label includes pattern; do
+  echo "--- $label ---"
+  grep -r -l -E "$pattern" $includes "$TARGET_DIR" 2>/dev/null \
+    | grep -v "*/node_modules/*" \
+    | grep -v "*/.git/*" \
+    | head -20 || echo "(none)"
+  echo ""
+done <<EOF
+Python (.py)|--include=*.py|from .*${MODULE_NAME}|import.*${MODULE_NAME}
+JS/TS (.js, .jsx, .ts, .tsx)|--include=*.js --include=*.jsx --include=*.ts --include=*.tsx|from ['\"].*${MODULE_NAME}['\"]|require\(['\"].*${MODULE_NAME}['\"]
+Go (.go)|--include=*.go|\"${MODULE_PATH}|\"${MODULE_DIR}.*${MODULE_NAME}
+Rust (.rs)|--include=*.rs|use.*${MODULE_NAME}
+Java (.java)|--include=*.java|import.*${MODULE_NAME}
+C# (.cs)|--include=*.cs|using.*${MODULE_NAME}
+Ruby (.rb)|--include=*.rb|require.*${MODULE_NAME}|require_relative.*${MODULE_NAME}
+PHP (.php)|--include=*.php|use.*${MODULE_NAME}|require.*${MODULE_NAME}
+EOF
 
 echo "=== Scan complete ==="
