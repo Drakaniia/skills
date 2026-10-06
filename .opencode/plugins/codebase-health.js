@@ -13,14 +13,16 @@
 // Claude Code and Codex use hooks/hooks.json instead and never load this file.
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
-import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { isDisabled, stripFrontmatter } from "../../hooks/session-start.mjs";
+import {
+  frontmatter,
+  isDisabledHere,
+  routerText,
+} from "../../hooks/session-start.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const ROUTER = join(ROOT, "skills", "codebase-health", "SKILL.md");
 const SKILLS = join(ROOT, "skills");
 
 // The router table stays lean because it is injected into every system prompt.
@@ -32,9 +34,7 @@ function skillCard() {
     .map((e) => {
       const file = join(SKILLS, e.name, "SKILL.md");
       if (!existsSync(file)) return null;
-      const md = readFileSync(file, "utf8");
-      const name = /^---\r?\n[\s\S]*?^name:\s*(.+)$/m.exec(md)?.[1]?.trim();
-      const desc = /^---\r?\n[\s\S]*?^description:\s*(.+)$/m.exec(md)?.[1]?.trim();
+      const { name, desc } = frontmatter(readFileSync(file, "utf8"));
       return name && desc ? `**\`${name}\`** — ${desc}` : null;
     })
     .filter(Boolean);
@@ -53,12 +53,12 @@ function skillCard() {
 export default async () => {
   let router;
   try {
-    if (isDisabled(process.env, join(homedir(), ".config", "codebase-health", "config.json"))) return {};
-    if (!existsSync(ROUTER)) return {};
-    router = stripFrontmatter(readFileSync(ROUTER, "utf8"));
+    if (isDisabledHere()) return {};
+    router = routerText();
   } catch {
     return {};
   }
+  if (!router) return {};
 
   let card;
   try {
@@ -71,7 +71,8 @@ export default async () => {
     config: async (config) => {
       config.skills = config.skills || {};
       config.skills.paths = config.skills.paths || [];
-      if (!config.skills.paths.includes(SKILLS)) config.skills.paths.push(SKILLS);
+      if (!config.skills.paths.includes(SKILLS))
+        config.skills.paths.push(SKILLS);
 
       // /codebase-health — the reference card. Built from each skill's own
       // frontmatter, so a new skill appears here on its own. Per-skill slash
