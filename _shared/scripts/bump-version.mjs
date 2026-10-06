@@ -19,7 +19,9 @@ const JSON_TARGETS = [
   [".agents/plugins/marketplace.json", (j) => j.plugins[0].version],
 ];
 
-const version = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).version;
+const version = JSON.parse(
+  readFileSync(join(ROOT, "package.json"), "utf8"),
+).version;
 if (typeof version !== "string" || !version) {
   console.error("package.json has no `version` to sync from");
   process.exit(1);
@@ -29,7 +31,8 @@ const drifted = [];
 let changed = 0;
 
 // `version:` line inside the SKILL.md frontmatter `metadata:` block.
-const FM_VERSION = /^(---\r?\n[\s\S]*?^\s*metadata:\r?\n(?:[ \t]+.*\r?\n)*?[ \t]+version:\s*)[^\n]*/m;
+const FM_VERSION =
+  /^(---\r?\n[\s\S]*?^\s*metadata:\r?\n(?:[ \t]+.*\r?\n)*?[ \t]+version:\s*)[^\n]*/m;
 
 function write(file, next, current) {
   if (next === current) return;
@@ -50,7 +53,7 @@ for (const [file, get] of JSON_TARGETS) {
   // Surgical string edit so the rest of the file keeps its exact formatting.
   const next = raw.replace(
     /("version"\s*:\s*)"[^"]*"/,
-    (_, prefix) => `${prefix}${JSON.stringify(version)}`
+    (_, prefix) => `${prefix}${JSON.stringify(version)}`,
   );
   if (next === raw) {
     console.error(`could not find a version field in ${file}`);
@@ -71,7 +74,11 @@ if (existsSync(skillsDir)) {
       console.log(`note: ${file} has no metadata.version, skipped`);
       continue;
     }
-    write(file, raw.replace(FM_VERSION, (_, prefix) => prefix + JSON.stringify(version)), raw);
+    write(
+      file,
+      raw.replace(FM_VERSION, (_, prefix) => prefix + JSON.stringify(version)),
+      raw,
+    );
   }
 }
 
@@ -89,5 +96,5 @@ if (CHECK) {
 console.log(
   changed === 0
     ? `version already in sync: ${version}`
-    : `wrote ${version} to ${changed} file(s)`
+    : `wrote ${version} to ${changed} file(s)`,
 );

@@ -6,7 +6,11 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { isDisabled, stripFrontmatter, shapeOutput } from "../hooks/session-start.mjs";
+import {
+  isDisabled,
+  stripFrontmatter,
+  shapeOutput,
+} from "../hooks/session-start.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const HOOK = join(ROOT, "hooks", "session-start.mjs");
@@ -15,7 +19,10 @@ const tmp = () => mkdtempSync(join(tmpdir(), "ch-"));
 
 function run(env = {}, cwd = ROOT, hook = HOOK) {
   return spawnSync(process.execPath, [hook], {
-    input: JSON.stringify({ hook_event_name: "SessionStart", source: "startup" }),
+    input: JSON.stringify({
+      hook_event_name: "SessionStart",
+      source: "startup",
+    }),
     encoding: "utf8",
     env: { ...process.env, ...env },
     cwd,
@@ -23,7 +30,10 @@ function run(env = {}, cwd = ROOT, hook = HOOK) {
 }
 
 test("stripFrontmatter: removes YAML block, body survives", () => {
-  assert.equal(stripFrontmatter("---\nname: a\n---\n\nbody text\n"), "body text");
+  assert.equal(
+    stripFrontmatter("---\nname: a\n---\n\nbody text\n"),
+    "body text",
+  );
 });
 
 test("stripFrontmatter: doc with no frontmatter passes through unchanged", () => {
@@ -31,18 +41,29 @@ test("stripFrontmatter: doc with no frontmatter passes through unchanged", () =>
 });
 
 test("stripFrontmatter: CRLF input handled", () => {
-  assert.equal(stripFrontmatter("---\r\nname: a\r\n---\r\n\r\nbody\r\n"), "body");
+  assert.equal(
+    stripFrontmatter("---\r\nname: a\r\n---\r\n\r\nbody\r\n"),
+    "body",
+  );
 });
 
 test("isDisabled: off/0/false/no disable, case-insensitive and trimmed", () => {
   for (const v of ["off", "0", "false", "no", "OFF", "  No  "]) {
-    assert.equal(isDisabled({ CODEBASE_HEALTH: v }, join(tmp(), "missing.json")), true, v);
+    assert.equal(
+      isDisabled({ CODEBASE_HEALTH: v }, join(tmp(), "missing.json")),
+      true,
+      v,
+    );
   }
 });
 
 test("isDisabled: full/on/1/true do not disable", () => {
   for (const v of ["full", "on", "1", "true", ""]) {
-    assert.equal(isDisabled({ CODEBASE_HEALTH: v }, join(tmp(), "missing.json")), false, v);
+    assert.equal(
+      isDisabled({ CODEBASE_HEALTH: v }, join(tmp(), "missing.json")),
+      false,
+      v,
+    );
   }
 });
 
@@ -101,6 +122,8 @@ test("resilience: missing SKILL.md exits 0 rather than wedging the session", () 
 });
 
 test("router body survives the round trip: no frontmatter in output", () => {
-  const parsed = JSON.parse(execFileSync(process.execPath, [HOOK], { input: "{}", encoding: "utf8" }));
+  const parsed = JSON.parse(
+    execFileSync(process.execPath, [HOOK], { input: "{}", encoding: "utf8" }),
+  );
   assert.doesNotMatch(parsed.hookSpecificOutput.additionalContext, /^---\r?\n/);
 });

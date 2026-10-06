@@ -55,12 +55,17 @@ if (!validateOnly) {
 if (syncOnly) {
   console.error("skip  validate skills: --sync-only");
 } else if (!existsSync(SKILLS_REF)) {
-  console.error("skip  validate skills: skills-ref not installed (npm i, then npm run validate)");
+  console.error(
+    "skip  validate skills: skills-ref not installed (npm i, then npm run validate)",
+  );
 } else {
   // Expand the glob here: PowerShell does not glob native-command args, and
   // `skills-ref validate` accepts exactly one path.
   const skills = readdirSync(join(ROOT, "skills"), { withFileTypes: true })
-    .filter((e) => e.isDirectory() && existsSync(join(ROOT, "skills", e.name, "SKILL.md")))
+    .filter(
+      (e) =>
+        e.isDirectory() && existsSync(join(ROOT, "skills", e.name, "SKILL.md")),
+    )
     .map((e) => `./skills/${e.name}`);
   for (const skill of skills) {
     run(`validate ${skill}`, process.execPath, [SKILLS_REF, "validate", skill]);

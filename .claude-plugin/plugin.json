@@ -8,7 +8,11 @@
   "repository": "https://github.com/Drakaniia/codebase-health",
   "license": "MIT",
   "keywords": [
-    "agent-skills", "codebase-health", "audit-codebase",
-    "folder-architecture", "code-design", "refactoring"
+    "agent-skills",
+    "codebase-health",
+    "audit-codebase",
+    "folder-architecture",
+    "code-design",
+    "refactoring"
   ]
 }
