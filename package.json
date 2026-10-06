@@ -33,7 +33,6 @@
     "prepack": "node scripts/build.mjs --sync-only",
     "test": "node --test",
     "validate": "node scripts/build.mjs --validate-only",
-    "check-opencode": "node scripts/check-opencode.mjs",
     "sync-refs": "bash _shared/scripts/sync-references.sh",
     "check-versions": "node _shared/scripts/bump-version.mjs --check",
     "bump": "node _shared/scripts/bump-version.mjs"
