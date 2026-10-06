@@ -91,17 +91,17 @@ npm run validate   # skills-ref validate ./skills/*
 npm test           # node --test tests/
 ```
 
-| Script                 | What it does                                                       |
-| ---------------------- | ------------------------------------------------------------------ |
-| `npm run build`        | Sync shared references into the skills, then validate              |
-| `npm run prepack`      | Sync only; npm runs this on every `npm publish` and `npm pack`     |
-| `npm run validate`     | OAS frontmatter and structure validation across all skills         |
-| `npm test`             | `node:test` suite for the session-start hook and the packed tarball |
-| `npm run sync-refs`    | Shared-reference sync only                                         |
-| `npm run check-versions` | Fails if any manifest's version disagrees with `package.json`    |
-| `npm run bump`         | Propagates `package.json`'s version into every manifest — see [RELEASING.md](RELEASING.md) |
+| Script                   | What it does                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| `npm run build`          | Sync shared references into the skills, then validate                                      |
+| `npm run prepack`        | Sync only; npm runs this on every `npm publish` and `npm pack`                             |
+| `npm run validate`       | OAS frontmatter and structure validation across all skills                                 |
+| `npm test`               | `node:test` suite for the session-start hook and the packed tarball                        |
+| `npm run sync-refs`      | Shared-reference sync only                                                                 |
+| `npm run check-versions` | Fails if any manifest's version disagrees with `package.json`                              |
+| `npm run bump`           | Propagates `package.json`'s version into every manifest — see [RELEASING.md](RELEASING.md) |
 
-> **On Windows:** `npm run validate` passes `./skills/*` to `skills-ref`, which relies on the shell expanding the glob. `cmd.exe` does not, so it fails with *"Path does not exist"*. Validate per skill there instead: `npx skills-ref validate skills/code-design`.
+> **On Windows:** `npm run validate` passes `./skills/*` to `skills-ref`, which relies on the shell expanding the glob. `cmd.exe` does not, so it fails with _"Path does not exist"_. Validate per skill there instead: `npx skills-ref validate skills/code-design`.
 
 ## Manual Smoke Test
 

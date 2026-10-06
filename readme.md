@@ -34,7 +34,7 @@ Add the package to the `plugin` array in `opencode.json`:
 ```
 
 OpenCode installs and caches npm plugins with Bun at startup, so there is no
-`npm install` step — and adding the package to a `package.json` is *not*
+`npm install` step — and adding the package to a `package.json` is _not_
 enough, the `plugin` entry is what loads it. Pin an exact version
 (`@qwenzy/codebase-health@2.0.0`) if you would rather not track `latest`.
 
@@ -62,13 +62,13 @@ All three install the same five skills. The session-start hook is registered for
 
 ## The Five Skills
 
-| Skill                                                                                 | What It Does                                                                                                                                                                                                                                            | When It Activates                                                                                       |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **[audit-codebase](./skills/audit-codebase/)**                                        | Scans any repo (language-agnostic) and flags structural issues: folder bloat, oversized files (>400 lines), deep nesting (>4 levels), naming inconsistencies, orphaned files, doc sprawl, and empty directories. Generates a structured markdown report with before/after diagrams. | On demand — when a codebase feels cluttered, disorganized, or hard to navigate.                           |
-| **[implement-folder-architecture](./skills/implement-folder-architecture/)**          | Executes the structural fixes from an audit report — moves files, splits directories, updates imports, barrel files, and verifies builds incrementally after each phase.                                                                                | After `audit-codebase` generates a report, or when a systematic folder reorganization is needed.        |
-| **[folder-architecture](./skills/folder-architecture/)**                              | Enforces clean folder organization and best-practice file placement _before_ every file creation or modification. Checks file counts, nesting depth, naming conventions, dumping grounds (utils/), barrel file freshness, and import hygiene.              | Every time the agent adds or edits code — proactive prevention.                                          |
-| **[code-design](./skills/code-design/)**                                              | Enforces clean function-level design inside files — pure functions, single responsibility, guard clauses, imperative shell pattern, side-effect management, and top-to-bottom readability. Includes a 5-step review checklist and 7 red flags.       | During code review, function creation, or when refactoring oversized functions.                          |
-| **[codebase-health](./skills/codebase-health/)**                                      | A thin router. It does not do any work itself — it maps the current situation to the right skill above, and is what the session-start hook injects so the routing table is already in context.                                                             | At session start, and whenever it is unclear which of the four skills applies.                            |
+| Skill                                                                        | What It Does                                                                                                                                                                                                                                                                        | When It Activates                                                                                |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **[audit-codebase](./skills/audit-codebase/)**                               | Scans any repo (language-agnostic) and flags structural issues: folder bloat, oversized files (>400 lines), deep nesting (>4 levels), naming inconsistencies, orphaned files, doc sprawl, and empty directories. Generates a structured markdown report with before/after diagrams. | On demand — when a codebase feels cluttered, disorganized, or hard to navigate.                  |
+| **[implement-folder-architecture](./skills/implement-folder-architecture/)** | Executes the structural fixes from an audit report — moves files, splits directories, updates imports, barrel files, and verifies builds incrementally after each phase.                                                                                                            | After `audit-codebase` generates a report, or when a systematic folder reorganization is needed. |
+| **[folder-architecture](./skills/folder-architecture/)**                     | Enforces clean folder organization and best-practice file placement _before_ every file creation or modification. Checks file counts, nesting depth, naming conventions, dumping grounds (utils/), barrel file freshness, and import hygiene.                                       | Every time the agent adds or edits code — proactive prevention.                                  |
+| **[code-design](./skills/code-design/)**                                     | Enforces clean function-level design inside files — pure functions, single responsibility, guard clauses, imperative shell pattern, side-effect management, and top-to-bottom readability. Includes a 5-step review checklist and 7 red flags.                                      | During code review, function creation, or when refactoring oversized functions.                  |
+| **[codebase-health](./skills/codebase-health/)**                             | A thin router. It does not do any work itself — it maps the current situation to the right skill above, and is what the session-start hook injects so the routing table is already in context.                                                                                      | At session start, and whenever it is unclear which of the four skills applies.                   |
 
 > **Language support:** All skills are language-agnostic — they work on Python, JavaScript/TypeScript, Go, Rust, Java, C#, Ruby, PHP, and any other language. Each includes language-specific reference guides for organization patterns, file-splitting mechanics, and function-level design traps.
 
@@ -116,40 +116,6 @@ The skills themselves stay installed either way; you just lose the automatic inj
 
 ## How They Work Together
 
-```
-audit-codebase
-  │
-  ├─ Scans entire codebase
-  ├─ Generates fix plan
-  ├─ Output: markdown report
-  └─ Use: quarterly / monthly
-        │
-        ▼
-implement-folder-architecture
-  │
-  ├─ Reads audit report
-  ├─ Executes migration phase by phase
-  ├─ Splits folders, moves files, updates imports
-  ├─ Verifies build after each step
-  └─ Use: after audit-codebase
-        │
-        ▼
-folder-architecture
-  │
-  ├─ Checks single file ops
-  ├─ Warns before bad placement
-  ├─ Suggests splits before bloat
-  └─ Use: every commit / edit
-        │
-        ▼
-code-design
-  │
-  ├─ Reviews function-level design
-  ├─ Enforces pure functions & SRP
-  ├─ Manages side effects (imperative shell)
-  └─ Use: during code review / function creation
-```
-
 - **Already messy?** Run `audit-codebase` → get a full report → run `implement-folder-architecture` to execute the fix → `folder-architecture` keeps it clean → `code-design` ensures functions inside are well-designed.
 - **Starting fresh?** `folder-architecture` activates during file ops, `code-design` activates during function creation — both prevent structural and functional decay from the start.
 - **Not sure which one applies?** Ask for `codebase-health` and let the router decide.
@@ -158,13 +124,13 @@ code-design
 
 Claude Code namespaces plugin skills, so the installed commands are:
 
-| Command                                  | Description                                                      |
-| ---------------------------------------- | ---------------------------------------------------------------- |
-| `/codebase-health`                       | Route to the right skill for the current task                    |
-| `/codebase-health:audit-codebase`        | Scan codebase for structural health issues and generate a report |
-| `/codebase-health:implement-folder-architecture` | Execute folder architecture migration from an audit report |
-| `/codebase-health:folder-architecture`   | Enforce clean folder organization before file operations         |
-| `/codebase-health:code-design`           | Review and enforce clean function-level design inside files      |
+| Command                                          | Description                                                      |
+| ------------------------------------------------ | ---------------------------------------------------------------- |
+| `/codebase-health`                               | Route to the right skill for the current task                    |
+| `/codebase-health:audit-codebase`                | Scan codebase for structural health issues and generate a report |
+| `/codebase-health:implement-folder-architecture` | Execute folder architecture migration from an audit report       |
+| `/codebase-health:folder-architecture`           | Enforce clean folder organization before file operations         |
+| `/codebase-health:code-design`                   | Review and enforce clean function-level design inside files      |
 
 Codex exposes the router as `$codebase-health`. OpenCode has no namespaced
 skill commands, so the plugin registers a single `/codebase-health` command
