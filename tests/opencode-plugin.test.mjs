@@ -1,6 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  mkdtempSync,
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+  readFileSync,
+  readdirSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -23,7 +31,9 @@ test("registers the bundled skills directory", async () => {
   assert.equal(config.skills.paths.length, 1);
   // .opencode/plugins/<file> -> up two -> repo root -> skills/
   assert.equal(config.skills.paths[0], join(ROOT, "skills"));
-  assert.ok(existsSync(join(config.skills.paths[0], "codebase-health", "SKILL.md")));
+  assert.ok(
+    existsSync(join(config.skills.paths[0], "codebase-health", "SKILL.md")),
+  );
 });
 
 test("does not duplicate the skills path when applied twice", async () => {
@@ -85,9 +95,15 @@ test("/codebase-health is a reference card covering every skill", async () => {
     assert.ok(cmd.template.includes(`\`${s}\``), `card missing ${s}`);
   }
   // Descriptions come from the skills, not a hand-kept copy.
-  const audit = readFileSync(join(ROOT, "skills", "audit-codebase", "SKILL.md"), "utf8");
+  const audit = readFileSync(
+    join(ROOT, "skills", "audit-codebase", "SKILL.md"),
+    "utf8",
+  );
   const auditDesc = /^description:\s*(.+)$/m.exec(audit)[1].trim();
-  assert.ok(cmd.template.includes(auditDesc), "card must carry the real description");
+  assert.ok(
+    cmd.template.includes(auditDesc),
+    "card must carry the real description",
+  );
   // The health loop closes the card.
   assert.match(cmd.template, /audit → fix → prevent/);
 });
@@ -102,13 +118,18 @@ test("the injected router stays lean and differs from the card", async () => {
   const output = { system: [] };
   await plugin["experimental.chat.system.transform"]({}, output);
   // Injected every turn, so it must not carry the full descriptions.
-  assert.ok(output.system[0].length < 1200, `router too heavy: ${output.system[0].length} chars`);
+  assert.ok(
+    output.system[0].length < 1200,
+    `router too heavy: ${output.system[0].length} chars`,
+  );
   assert.notEqual(config.command["codebase-health"].template, output.system[0]);
 });
 
 test("preserves user-defined commands", async () => {
   const plugin = await loadPlugin();
-  const config = { command: { "my-own": { description: "mine", template: "hi" } } };
+  const config = {
+    command: { "my-own": { description: "mine", template: "hi" } },
+  };
   await plugin.config(config);
   assert.equal(Object.keys(config.command).length, 2);
   assert.ok(config.command["my-own"]);
@@ -125,6 +146,18 @@ test("CODEBASE_HEALTH=off yields no hooks at all", async () => {
   assert.deepEqual(plugin, {});
 });
 
+test("the adapter must not be gitignored", () => {
+  // A `.opencode/plugins/*` ignore rule silently beats a negation below it —
+  // git will not descend into an excluded directory — so the adapter once went
+  // untracked while still publishing fine from a local build. Invisible until
+  // someone clones.
+  assert.notEqual(
+    spawnSync("git", ["check-ignore", "-q", PLUGIN], { cwd: ROOT }).status,
+    0,
+    `${PLUGIN} is gitignored (it must ship)`,
+  );
+});
+
 test("a missing router degrades to no hooks rather than throwing", async () => {
   const dir = mkdtempSync(join(tmpdir(), "ch-"));
   mkdirSync(join(dir, ".opencode", "plugins"), { recursive: true });
@@ -137,7 +170,9 @@ export default async () => {
   return { config: async () => {}, "experimental.chat.system.transform": async (_i, o) => o.system.push(stripFrontmatter("no router here")) };
 };`,
   );
-  const mod = await import(pathToFileURL(join(dir, ".opencode", "plugins", "p.mjs")).href);
+  const mod = await import(
+    pathToFileURL(join(dir, ".opencode", "plugins", "p.mjs")).href
+  );
   const plugin = await mod.default({});
   assert.deepEqual(plugin, {});
 });

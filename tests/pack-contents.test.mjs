@@ -32,7 +32,9 @@ function packFileList() {
   try {
     parsed = JSON.parse(r.stdout);
   } catch {
-    assert.fail(`npm pack --json did not emit clean JSON on stdout:\n${r.stdout}`);
+    assert.fail(
+      `npm pack --json did not emit clean JSON on stdout:\n${r.stdout}`,
+    );
   }
   // `npm pack --json` has shipped three shapes: npm 11 returns an array,
   // npm 12 returns an object keyed by package name. CI installs npm@latest, so
@@ -50,24 +52,27 @@ function packFileList() {
   return new Map(info.files.map((f) => [f.path, f.size]));
 }
 
+// `npm pack` runs on every assert below, not per test: a dry-run pack spawns
+// npm, runs prepack (which shells out to bash and sync-references.sh) and
+// re-reads the whole tree, so paying for it three times buys nothing.
+const FILES = /* @__PURE__ */ (() => packFileList())();
+
 test("the tarball carries every generated per-skill reference", () => {
-  const files = packFileList();
   for (const skill of SYNCED_SKILLS) {
     for (const ref of SYNCED_REFS) {
       const path = `skills/${skill}/references/${ref}`;
-      assert.ok(files.has(path), `missing from the published tarball: ${path}`);
+      assert.ok(FILES.has(path), `missing from the published tarball: ${path}`);
     }
   }
 });
 
 test("each generated copy is the same size as its canonical source", () => {
-  const files = packFileList();
   for (const ref of SYNCED_REFS) {
     const canonical = statSync(join(ROOT, "_shared", "references", ref)).size;
     for (const skill of SYNCED_SKILLS) {
       const path = `skills/${skill}/references/${ref}`;
       assert.equal(
-        files.get(path),
+        FILES.get(path),
         canonical,
         `${path} does not match _shared/references/${ref} — the sync is stale`,
       );
@@ -81,5 +86,9 @@ test("prepack is what puts them there", () => {
   // above would silently lose all six and the first test would fail. Assert the
   // hook exists so removing it is a deliberate act, not a tidy-up.
   const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
-  assert.match(pkg.scripts.prepack ?? "", /--sync-only/, "prepack must sync the references before packing");
+  assert.match(
+    pkg.scripts.prepack ?? "",
+    /--sync-only/,
+    "prepack must sync the references before packing",
+  );
 });
