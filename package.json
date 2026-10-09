@@ -1,6 +1,6 @@
 {
   "name": "@qwenzy/codebase-health",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Language-agnostic agent skills for keeping codebases healthy — audit structure, execute refactoring, prevent decay, and enforce clean code design.",
   "keywords": [
     "agent-skills",
@@ -20,7 +20,7 @@
     ".claude-plugin/",
     ".codex-plugin/",
     ".agents/",
-    ".opencode/plugins/codebase-health.js",
+    ".opencode/",
     "assets/",
     "hooks/",
     "skills/",
