@@ -20,7 +20,7 @@
     ".claude-plugin/",
     ".codex-plugin/",
     ".agents/",
-    ".opencode/plugins/codebase-health.js",
+    ".opencode/",
     "assets/",
     "hooks/",
     "skills/",
