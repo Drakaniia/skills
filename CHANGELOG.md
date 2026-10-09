@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-## [2.2.0] — 2026-10-09
+## [2.2.1] — 2026-10-09
+
+### Fixed
+
+- **Package was missing .opencode/ directory.** The `files` pattern in `package.json` only included `.opencode/plugins/codebase-health.js`, leaving out `INSTALL.md` and `docs/README.opencode.md` from the published tarball. Changed the pattern to `.opencode/` to include the entire directory.
 
 ### Added
 
