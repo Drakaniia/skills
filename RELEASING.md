@@ -156,7 +156,8 @@ startup — skills, plugins, and `AGENTS.md` edits do not hot-reload.
 
 ```powershell
 # OpenCode
-#   "plugin": ["@qwenzy/codebase-health"] in opencode.json
+#   "plugin": ["@qwenzy/codebase-health"] in opencode.json (V1)
+#   "plugins": ["@qwenzy/codebase-health"] in opencode.json (V2, 2.0.4+)
 
 # Claude Code
 #   /plugin marketplace add Drakaniia/codebase-health

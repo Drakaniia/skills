@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [2.2.0] — 2026-10-09
+
+### Added
+
+- **Obra-style OpenCode install.** New `.opencode/INSTALL.md` (agent-executable: V1 `plugin` vs V2 `plugins` blocks, restart, `/codebase-health` verify, version pinning, Windows absolute-path fallback, manual-copy migration) and `docs/README.opencode.md` (skill table, `skill`-tool usage, adapter internals, tool mapping, troubleshooting). `readme.md` now tells OpenCode to fetch and follow `INSTALL.md` instead of asking the human to hand-edit `opencode.json`, with the manual JSON kept in a collapsed block.
+
 ## [2.1.1] — 2026-10-02
 
 The first version published through the tag pipeline rather than from a local

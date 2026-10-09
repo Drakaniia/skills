@@ -25,7 +25,21 @@ codex plugin add codebase-health@codebase-health
 
 ### OpenCode
 
-Add the package to the `plugin` array in `opencode.json`:
+OpenCode uses its own plugin install; install codebase-health separately even
+if you already use it in another harness.
+
+Tell OpenCode:
+
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/Drakaniia/codebase-health/refs/heads/main/.opencode/INSTALL.md
+```
+
+Detailed docs: [docs/README.opencode.md](./docs/README.opencode.md)
+
+<details>
+<summary>Manual setup (opencode.json / opencode.jsonc)</summary>
+
+V1 (`plugin`, singular):
 
 ```json
 {
@@ -33,10 +47,20 @@ Add the package to the `plugin` array in `opencode.json`:
 }
 ```
 
+V2 — 2.0.4 or later (`plugins`, plural):
+
+```json
+{
+  "plugins": ["@qwenzy/codebase-health@latest"]
+}
+```
+
 OpenCode installs and caches npm plugins with Bun at startup, so there is no
 `npm install` step — and adding the package to a `package.json` is _not_
-enough, the `plugin` entry is what loads it. Pin an exact version
-(`@qwenzy/codebase-health@2.0.0`) if you would rather not track `latest`.
+enough, the `plugin`/`plugins` entry is what loads it. Pin an exact version
+(`@qwenzy/codebase-health@2.1.1`) if you would rather not track `latest`.
+
+</details>
 
 OpenCode has no `SessionStart` hook, so the package ships a small OpenCode
 adapter at `.opencode/plugins/codebase-health.js` (its `main`). It registers
@@ -50,7 +74,7 @@ audit and changes no files.
 
 Working inside a clone of this repo needs no config at all: OpenCode
 auto-discovers `.opencode/plugins/*.js`, so the adapter loads on its own.
-Elsewhere, add the published package to `plugin` as above.
+Elsewhere, add the published package to `plugin` (V1) or `plugins` (V2) as above.
 
 Prefer npm? The package is public, so `npm view @qwenzy/codebase-health` and
 `npm pack @qwenzy/codebase-health@latest` both work for inspection — installing

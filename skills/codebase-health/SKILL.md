@@ -2,7 +2,7 @@
 name: codebase-health
 description: Use when starting any session, or when unsure which codebase-health skill applies. Routes to audit-codebase, folder-architecture, code-design, and implement-folder-architecture. Establishes that codebase health is continuous practice, not a one-time audit.
 metadata:
-  version: "2.1.1"
+  version: "2.2.0"
 ---
 
 # Codebase Health
